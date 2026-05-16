@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+/*
+ * ==========================================================================
+ * DESIGN SYSTEM: WEBGIS THỦ ĐỨC ("The Cartographic Lens")
+ * Tailwind v4 Direct Configuration
+ * Add prefix "wg-" to avoid conflicts with Daily UI
+ * ==========================================================================
+ */
+
+@theme {
+    /* --- 1. Primary Colors (Màu chủ đạo - Xanh Dương) --- */
+    --color-wg-primary: #005bbf;
+    --color-on-wg-primary: #ffffff;
+
+    --color-wg-primary-container: #1a73e8; /* Bản nhạt hơn để làm nền nút to */
+    --color-on-wg-primary-container: #ffffff;
+
+    /* Nhóm màu đảo ngược (Nền siêu nhạt + Icon đậm) - Đã đổi tên đồng bộ */
+    --color-wg-primary-soft: #d8e2ff; /* Nền xanh lơ siêu nhạt */
+    --color-on-wg-primary-soft: #004493; /* Icon/Chữ màu xanh dương đậm */
+    /* --- 2. Secondary Colors (Màu phụ trợ - Xanh Lam Xám) --- */
+    --color-wg-secondary: #475e8c;
+    --color-on-wg-secondary: #ffffff;
+    --color-wg-secondary-container: #b2c9fe;
+    --color-on-wg-secondary-container: #3d5481;
+
+    /* --- 3. Tertiary Colors (Điểm nhấn - Cam Đất - Rất ít dùng) --- */
+    --color-wg-tertiary: #9e4300;
+    --color-on-wg-tertiary: #ffffff;
+
+    /* --- 4. Background & Surface (Màu nền & Phân lớp không gian) --- */
+    --color-wg-background: #f8f9fa; /* Nền toàn trang */
+    --color-on-wg-background: #191c1d;
+
+    --color-wg-surface: #f8f9fa; /* Nền cơ bản */
+    --color-wg-surface-container-lowest: #ffffff; /* Trắng tinh cho Card, Form */
+    --color-wg-surface-container: #edeeef; /* Xám nhạt cho Sidebar, Header */
+    --color-on-wg-surface: #191c1d; /* Màu chữ chuẩn */
+    --color-on-wg-surface-variant: #414754; /* Màu chữ xám mờ cho ghi chú */
+    /* --- 5. Outlines (Đường viền) --- */
+    --color-wg-outline: #727785; /* Viền Input đậm */
+    --color-wg-outline-variant: #c1c6d6; /* Viền Card, vạch kẻ nhạt */
+    /* --- 6. Semantic & Status Colors (Thông báo trạng thái) --- */
+    --color-wg-error: #ea4335;
+    --color-on-wg-error: #ffffff;
+    --color-wg-warning: #fbbc04;
+    --color-wg-success: #34a853;
+
+    /* --- 7. Box Shadows (Hiệu ứng chiều sâu) --- */
+    --shadow-wg-ambient: 0 12px 40px rgba(0, 91, 191, 0.06);
+
+    /* --- 8. Border Radius (Độ bo góc) --- */
+    --radius: 0.25rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-full: 9999px;
+
+    /* --- 9. Typography (Font chữ - Giữ nguyên) --- */
+    --font-display: "Be Vietnam Pro", sans-serif;
+    --font-headline: "Be Vietnam Pro", sans-serif;
+    --font-body: "Be Vietnam Pro", sans-serif;
+    --font-label: "Be Vietnam Pro", sans-serif;
+    --font-mono: "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
+}
+
+/* 
+ * ==========================================================================
+ * GLOBAL STYLES (Base setup & overrides)
+ * ==========================================================================
+ */
+
+@layer base {
+    /* Set default app background, text color, and font */
+    body {
+        @apply bg-wg-surface text-on-wg-surface font-body antialiased;
+    }
+
+    /* Apply display font to all headings */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .font-headline,
+    .font-display {
+        @apply font-display font-bold!;
+    }
+}
+
+@layer utilities {
+    /* Google Material Symbols base configuration */
+    .material-symbols-outlined {
+        font-variation-settings: "FILL" 0,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 24;
+    }
+
+    /* Filled state for icons */
+    .material-symbols-outlined.fill {
+        font-variation-settings: "FILL" 1;
+    }
+}
