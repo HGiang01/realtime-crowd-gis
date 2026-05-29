@@ -3,12 +3,12 @@ import {
     Eye,
     EyeOff,
     HelpCircle,
-    LogIn,
+    PenLine,
     MapPinned,
 } from "lucide-react";
 import { useState } from "react";
 
-export default function Login() {
+export default function Register() {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     return (
@@ -40,16 +40,16 @@ export default function Login() {
 
             <main className="flex-1 relative z-10 w-full max-w-6xl mx-auto flex items-center justify-center gap-12 px-8 pb-14 pt-10">
                 <section
-                    className="w-lg fade-up rounded-3xl border border-wg-outline-variant bg-wg-surface-container-lowest p-8 shadow-(--shadow-wg-ambient)"
+                    className="w-lg fade-up rounded-3xl border border-wg-outline-variant bg-wg-surface-container-lowest px-9 py-6 shadow-(--shadow-wg-ambient)"
                     style={{ animationDelay: "360ms" }}
                 >
-                    <div className="mb-6 flex flex-col items-center justify-center gap-4">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-wg-primary-soft text-wg-primary">
-                            <LogIn className="h-6 w-6" />
+                    <div className="mb-4 flex items-center justify-center gap-4">
+                        <div className="flex h-14 w-14 mr-1 items-center justify-center rounded-2xl bg-wg-primary-soft text-wg-primary">
+                            <PenLine className="h-6 w-6" />
                         </div>
-                        <div className="text-center">
+                        <div>
                             <h2 className="font-headline text-xl text-on-wg-surface">
-                                Welcome Back
+                                Register an account
                             </h2>
                             <p className="text-sm text-on-wg-surface-variant">
                                 Manage spatial data, connect the community
@@ -57,14 +57,14 @@ export default function Login() {
                         </div>
                     </div>
 
-                    <form className="space-y-5">
+                    <form className="space-y-3">
                         <label className="block text-sm font-medium text-on-wg-surface">
-                            Email or Username
+                            Username
                             <input
                                 className="mt-2 w-full rounded-xl border border-wg-outline bg-wg-surface-container-lowest px-4 py-3 text-sm text-on-wg-surface outline-none transition focus:border-wg-primary"
-                                placeholder="example@email.com"
+                                placeholder="nguyenvana"
                                 type="text"
-                                name="usernameOrEmail"
+                                name="username"
                             />
                         </label>
 
@@ -101,14 +101,68 @@ export default function Login() {
                             </div>
                         </label>
 
-                        <div className="flex items-center justify-end text-xs text-on-wg-surface-variant">
-                            <button
-                                className="text-wg-primary hover:underline"
-                                type="button"
-                            >
-                                Forgot password?
-                            </button>
-                        </div>
+                        <label className="block text-sm font-medium text-on-wg-surface">
+                            Confirm Password
+                            <div className="relative mt-2">
+                                <input
+                                    className="w-full rounded-xl border border-wg-outline bg-wg-surface-container-lowest px-4 py-3 pr-11 text-sm text-on-wg-surface outline-none transition focus:border-wg-primary"
+                                    placeholder="••••••••"
+                                    type={
+                                        isPasswordVisible ? "text" : "password"
+                                    }
+                                    name="confirmPassword"
+                                />
+                                <button
+                                    aria-label={
+                                        isPasswordVisible
+                                            ? "Hide password"
+                                            : "Show password"
+                                    }
+                                    aria-pressed={isPasswordVisible}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-on-wg-surface-variant hover:text-on-wg-surface cursor-pointer"
+                                    onClick={() =>
+                                        setIsPasswordVisible((prev) => !prev)
+                                    }
+                                    type="button"
+                                >
+                                    {isPasswordVisible ? (
+                                        <EyeOff className="h-4 w-4" />
+                                    ) : (
+                                        <Eye className="h-4 w-4" />
+                                    )}
+                                </button>
+                            </div>
+                        </label>
+
+                        <label className="block text-sm font-medium text-on-wg-surface">
+                            Email
+                            <input
+                                className="mt-2 w-full rounded-xl border border-wg-outline bg-wg-surface-container-lowest px-4 py-3 text-sm text-on-wg-surface outline-none transition focus:border-wg-primary"
+                                placeholder="example@email.com"
+                                type="email"
+                                name="email"
+                            />
+                        </label>
+
+                        <label className="block text-sm font-medium text-on-wg-surface">
+                            Phone
+                            <input
+                                className="mt-2 w-full rounded-xl border border-wg-outline bg-wg-surface-container-lowest px-4 py-3 text-sm text-on-wg-surface outline-none transition focus:border-wg-primary"
+                                placeholder="0123456789"
+                                type="text"
+                                name="phone"
+                            />
+                        </label>
+
+                        <label className="block text-sm font-medium text-on-wg-surface">
+                            Date of Birth
+                            <input
+                                className="mt-2 w-full rounded-xl border border-wg-outline bg-wg-surface-container-lowest px-4 py-3 text-sm text-on-wg-surface outline-none transition focus:border-wg-primary"
+                                placeholder="dd/mm/yyyy"
+                                type="date"
+                                name="dob"
+                            />
+                        </label>
 
                         <div className="text-red-500">Error message</div>
 
@@ -116,30 +170,17 @@ export default function Login() {
                             className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-wg-primary px-4 py-3 text-sm font-semibold text-on-wg-primary transition hover:bg-wg-primary-container"
                             type="submit"
                         >
-                            Sign in
+                            Register
                             <ArrowRight className="h-4 w-4" />
                         </button>
 
-                        <div className="flex items-center gap-3 text-xs text-on-wg-surface-variant">
-                            <span className="h-px flex-1 bg-wg-outline-variant" />
-                            Or
-                            <span className="h-px flex-1 bg-wg-outline-variant" />
-                        </div>
-
-                        <button
-                            className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-wg-outline-variant px-4 py-3 text-sm font-medium text-on-wg-surface hover:border-wg-outline"
-                            type="button"
-                        >
-                            Continue with Google
-                        </button>
-
                         <div className="text-center text-xs text-on-wg-surface-variant">
-                            Don't have an account?{" "}
+                            Do you have an account?{" "}
                             <button
                                 className="font-semibold text-wg-primary hover:underline"
                                 type="button"
                             >
-                                Sign up now
+                                Sign in now
                             </button>
                         </div>
                     </form>
