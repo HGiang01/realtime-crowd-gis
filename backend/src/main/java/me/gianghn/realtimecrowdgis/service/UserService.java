@@ -26,6 +26,12 @@ public class UserService {
     private final UserAuthProviderRepository userAuthProviderRepository;
     private final UserMapper userMapper;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenService tokenService;
+
+    public UserDTO.GetMeResponse getMe(UUID userId) {
+        User user = userRepository.getMe(userId);
+        return userMapper.toGetMeResponse(user);
+    }
 
     public boolean existsUserByUsername(String username) {
         return userRepository.existsUserByUsername(username);
@@ -97,10 +103,9 @@ public class UserService {
         User existingUser = userRepository.findById(request.userId())
                                           .orElseThrow(() -> new UserNotFoundException("User not found with user id: " + request.userId() + " to update"));
 
-        // todo: kiểm tra xem password có bị null không ? (trường hợp user đăng ký bằng oauth2 thì password sẽ null)
         // test: kiểm tra xem password có bị null không ? (trường hợp user đăng ký bằng oauth2 thì password sẽ null)
         if (existingUser.getPassword() == null) {
-            throw new UserNotFoundException("Password is already in use!"); // XÀM, LÀM LẠI
+            throw new UserNotFoundException("Password is already in use!");
         }
 
         if (!checkPassword(request.currentPassword(), existingUser.getPassword())) {
@@ -113,7 +118,6 @@ public class UserService {
         refreshTokenRepository.deleteAllByUserId(existingUser.getId());
     }
 
-    // test: @Modify cần annotation này (@Transactional) nên tắt ở đây thủ xem
     @Transactional
     public void deleteUserByUserId(UserDTO.DeleteRequest request) {
         userRepository.deleteByIdDirectly(request.userId());

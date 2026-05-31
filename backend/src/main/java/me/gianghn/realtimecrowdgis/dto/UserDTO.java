@@ -74,4 +74,18 @@ public interface UserDTO {
     ) {
     }
 
+    record GetMeResponse(
+            String username,
+
+            User.UserRole role,
+
+            String email,
+
+            String phone,
+
+            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+            LocalDate dob
+    ) {
+    }
+
 }
