@@ -1,4 +1,4 @@
-src/main/resources/application*.yaml
+**/application*.yaml
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar

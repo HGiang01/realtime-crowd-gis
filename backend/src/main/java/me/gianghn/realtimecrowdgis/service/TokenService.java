@@ -65,16 +65,16 @@ public class TokenService {
 
     public AuthDTO.AccessTokenInfo extractBearerToken(String bearerToken) {
         String accessToken = bearerToken.substring(7);
-
         Claims claims = Jwts.parser()
                             .verifyWith(getSigningKey())
                             .build()
                             .parseSignedClaims(accessToken)
                             .getPayload();
-
         String userIdStr = claims.get("userId", String.class);
+        UUID userId = UUID.fromString(userIdStr);
         User.UserRole role = User.UserRole.valueOf(claims.get("role", String.class));
-        return new AuthDTO.AccessTokenInfo(UUID.fromString(userIdStr), role);
+
+        return new AuthDTO.AccessTokenInfo(userId, role);
     }
 
     public UUID getUserIdFromAccessToken(String accessToken) {

@@ -16,7 +16,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -46,11 +49,11 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(
+            @AuthenticationPrincipal UUID userId,
             @CookieValue(name = "refresh_token", required = false) String refreshTokenStr,
-            @RequestHeader(value = "Authorization", required = false) String authHeader,
             @RequestParam(name = "all-devices", defaultValue = "false") boolean allDevices
     ) {
-        authService.logout(refreshTokenStr, authHeader, allDevices);
+        authService.logout(userId, refreshTokenStr, allDevices);
         ResponseCookie cookie = cookieHelper.clearRefreshTokenCookie();
 
         return ResponseEntity.ok()
@@ -70,7 +73,7 @@ public class AuthController {
         OtpDTO.SendResponse sendResponse = authService.sendOtp(request);
         return ResponseEntity.ok(ApiResponse.success("OTP sent successfully!", sendResponse));
     }
-    
+
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<AuthDTO.AccessTokenResponse>> refreshAccessToken(
             @CookieValue(name = "refresh_token", required = false) String refreshTokenStr

@@ -77,10 +77,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void logout(String refreshTokenStr, String authHeader, boolean allDevices) {
-        AuthDTO.AccessTokenInfo accessToken = tokenService.extractBearerToken(authHeader);
-        UUID userId = accessToken.userId();
-
+    public void logout(UUID userId, String refreshTokenStr, boolean allDevices) {
         if (allDevices) {
             tokenService.revokeRefreshTokensByUserId(userId);
         } else {

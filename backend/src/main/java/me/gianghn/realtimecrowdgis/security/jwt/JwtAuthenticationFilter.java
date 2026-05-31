@@ -4,26 +4,27 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import me.gianghn.realtimecrowdgis.dto.AuthDTO;
 import me.gianghn.realtimecrowdgis.entity.User;
-import me.gianghn.realtimecrowdgis.exception.specify.UserNotFoundException;
 import me.gianghn.realtimecrowdgis.repository.UserRepository;
 import me.gianghn.realtimecrowdgis.service.TokenService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final TokenService tokenService;
-    private final UserRepository userRepository;
 
     private final HandlerExceptionResolver exceptionResolver;
 
@@ -33,7 +34,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver
     ) {
         this.tokenService = tokenService;
-        this.userRepository = userRepository;
         this.exceptionResolver = exceptionResolver;
     }
 
@@ -44,26 +44,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         try {
-            // Extract token from Authorization header
-            String token = extractToken(request);
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                // Extract token from Authorization header
+                AuthDTO.AccessTokenInfo accessTokenInfo = tokenService.extractBearerToken(authHeader);
+                UUID userId = accessTokenInfo.userId();
+                User.UserRole role = accessTokenInfo.role();
 
-            if (token != null) {
-                tokenService.verifyAccessToken(token);
-
-                // Find user by id
-                UUID userId = tokenService.getUserIdFromAccessToken(token);
-                User user = userRepository.findById(userId)
-                                          .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId, null));
-
-                // Convert User to UserDetails (Spring security)
-                UserDetails userDetails = org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
-                                                                                            .password("")
-                                                                                            .authorities(user.getRole()
-                                                                                                             .name())
-                                                                                            .build();
+                // Add role for user
+                List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_" + role.name()
+                                                                                                      .toUpperCase());
 
                 // Set authentication in SecurityContext
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
