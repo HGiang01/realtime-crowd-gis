@@ -1,23 +1,27 @@
 package me.gianghn.realtimecrowdgis.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.validation.constraints.*;
-import me.gianghn.realtimecrowdgis.entity.RefreshToken;
-import me.gianghn.realtimecrowdgis.entity.User;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import me.gianghn.realtimecrowdgis.entity.RefreshToken;
+import me.gianghn.realtimecrowdgis.entity.User;
+
 public interface AuthDTO {
-
-
     record RegisterRequest(
             @NotBlank(message = "Username is required")
             @Size(min = 4, max = 50, message = "Username must be between 4 and 50 characters")
             @Pattern(regexp = "^[a-zA-Z0-9_]+$",
-                     message = "Invalid usernameOrEmail. Only letters, numbers, and underscores are accepted")
+                     message = "Invalid username. Only letters, numbers, and underscores are accepted")
             String username,
 
             @NotBlank(message = "Password is required")
@@ -73,16 +77,16 @@ public interface AuthDTO {
             @Email(message = "Invalid email format")
             String email,
 
-            @NotBlank(message = "Password is required")
+            @NotBlank(message = "New password is required")
             // prod: turn on
             // @Pattern(
             //         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])\\S{8,}$",
             //         message = "Password must be at least 8 characters long, contain no spaces, and include uppercase, lowercase, number, and special character"
             // )
-            String password,
+            String newPassword,
 
-            @NotBlank(message = "Confirm password is required")
-            String confirmPassword,
+            @NotBlank(message = "Confirm new password is required")
+            String confirmNewPassword,
 
             @NotBlank(message = "OTP code is required")
             String otp
@@ -91,20 +95,11 @@ public interface AuthDTO {
         @AssertTrue(message = "Passwords do not match")
         public boolean isConfirmPasswordValid() {
             // For @NotBlank check
-            if (password == null || confirmPassword == null) {
+            if (newPassword == null || confirmNewPassword == null) {
                 return true;
             }
-            return password.equals(confirmPassword);
+            return newPassword.equals(confirmNewPassword);
         }
-    }
-
-    record RegisterResponse(
-            String username,
-            String email,
-            String phone,
-            LocalDate dob,
-            User.UserStatus status
-    ) {
     }
 
     record GoogleOAuthResponse(

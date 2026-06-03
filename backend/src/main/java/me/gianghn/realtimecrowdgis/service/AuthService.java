@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import me.gianghn.realtimecrowdgis.dto.AuthDTO;
 import me.gianghn.realtimecrowdgis.dto.AuthDTO.AuthResult;
 import me.gianghn.realtimecrowdgis.dto.AuthDTO.RegisterRequest;
-import me.gianghn.realtimecrowdgis.dto.AuthDTO.RegisterResponse;
 import me.gianghn.realtimecrowdgis.dto.OtpDTO;
 import me.gianghn.realtimecrowdgis.entity.RefreshToken;
 import me.gianghn.realtimecrowdgis.entity.User;
@@ -30,7 +29,7 @@ public class AuthService {
     private final UserMapper userMapper;
 
     @Transactional
-    public RegisterResponse register(RegisterRequest request) {
+    public void register(RegisterRequest request) {
         if (userService.existsUserByUsername(request.username())) {
             throw new UserAlreadyExistsException("Username is already in use!");
         }
@@ -42,8 +41,6 @@ public class AuthService {
         User newUser = userService.createTempUser(userMapper.toEntity(request));
 
         emailService.sendOtp(newUser.getEmail());
-
-        return userMapper.toRegisterResponse(newUser);
     }
 
 
@@ -60,11 +57,11 @@ public class AuthService {
         }
 
         User user = optionalUser.orElseThrow(
-                () -> new InvalidCredentialsException("Username or password is invalid")
+                () -> new InvalidCredentialsException("Username or newPassword is invalid", "INVALID_USER_OR_PASSWORD")
         );
 
         if (!checkPassword(password, optionalUser.get().getPassword())) {
-            throw new InvalidCredentialsException("Username or password is invalid");
+            throw new InvalidCredentialsException("Username or newPassword is invalid", "INVALID_USER_OR_PASSWORD");
         }
 
         if (user.getStatus() != User.UserStatus.active) {
@@ -87,7 +84,7 @@ public class AuthService {
 
     public void forgotPassword(AuthDTO.ForgotPasswordRequest request) {
         User user = userService.findByEmail(request.email())
-                               .orElseThrow(() -> new UserNotFoundException("User not found with email: " + request.email()));
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + request.email()));
         if (user.getStatus() != User.UserStatus.active) {
             throw new AccountNotActiveException("Your account is not active. Please verify your email or contact support for more information");
         }
@@ -97,29 +94,29 @@ public class AuthService {
     @Transactional
     public void resetPassword(AuthDTO.ResetPasswordRequest request) {
         User user = userService.findByEmail(request.email())
-                               .orElseThrow(() -> new UserNotFoundException("User not found with user email: " + request.email() + " to reset password"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with user email: " + request.email() + " to reset newPassword"));
 
         boolean isOptCodeValid = emailService.verifyOtpMailCode(request.email(), request.otp());
         if (!isOptCodeValid) throw new InvalidCredentialsException("Invalid OTP!");
 
-        userService.updatePassword(user.getId(), request.password());
+        userService.updatePassword(user.getId(), request.newPassword());
         tokenService.revokeRefreshTokensByUserId(user.getId());
     }
 
-    public OtpDTO.SendResponse sendOtp(OtpDTO.SendRequest request) {
+    public OtpDTO.ResendResponse resendOtp(OtpDTO.ResendRequest request) {
         User user = userService.findByEmail(request.email())
-                               .orElseThrow(() -> new UserNotFoundException("User not found with email: " + request.email()));
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + request.email()));
         if (user.getStatus() != User.UserStatus.pending_verification) {
             throw new AccountNotActiveException("Your account is not pending verification");
         }
         Instant sentDate = emailService.sendOtp(request.email());
 
-        return new OtpDTO.SendResponse(request.email(), sentDate.plusSeconds(5 * 60)); // OTP expires in 5 minutes
+        return new OtpDTO.ResendResponse(request.email(), sentDate.plusSeconds(5 * 60)); // OTP expires in 5 minutes
     }
 
     public void verifyEmail(OtpDTO.VerifyRequest request) {
         User user = userService.findByEmail(request.email())
-                               .orElseThrow(() -> new UserNotFoundException("User not found with user email: " + request.email() + " to update status"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with user email: " + request.email() + " to update status"));
 
         boolean isOptCodeValid = emailService.verifyOtpMailCode(request.email(), request.otp());
         if (!isOptCodeValid) throw new InvalidCredentialsException("Invalid email or OTP!");
@@ -135,7 +132,7 @@ public class AuthService {
         UUID userId = validRefreshToken.getUser().getId();
 
         User user = userService.findById(userId)
-                               .orElseThrow(() -> new UserNotFoundException("User not found with user ID: " + userId));
+                .orElseThrow(() -> new UserNotFoundException("User not found with user ID: " + userId));
 
         if (user.getStatus() != User.UserStatus.active) {
             tokenService.revokeRefreshTokensByUserId(userId);

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
 
 public interface OtpDTO {
-    record SendRequest(
+    record ResendRequest(
             @NotBlank(message = "Email is required")
             @Email(message = "Invalid email format")
             String email
@@ -18,12 +18,12 @@ public interface OtpDTO {
             @Email(message = "Invalid email format")
             String email,
 
-            @NotBlank(message = "Opt code is required")
+            @NotBlank(message = "OTP code is required")
             String otp
     ) {
     }
 
-    record SendResponse(
+    record ResendResponse(
             @Email(message = "Invalid email format")
             String email,
             Instant expiresAt

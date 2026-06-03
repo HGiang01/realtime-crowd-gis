@@ -24,7 +24,7 @@ public interface UserDTO {
 
             @Size(min = 4, max = 50, message = "Username must be between 4 and 50 characters")
             @Pattern(regexp = "^[a-zA-Z0-9_]+$",
-                     message = "Invalid usernameOrEmail. Only letters, numbers, and underscores are accepted")
+                     message = "Invalid username. Only letters, numbers, and underscores are accepted")
             String username,
 
             @Email(message = "Invalid email format")
@@ -54,17 +54,17 @@ public interface UserDTO {
             // )
             String newPassword,
 
-            @NotBlank(message = "Confirm password is required")
-            String confirmPassword
+            @NotBlank(message = "Confirm new password is required")
+            String confirmNewPassword
     ) {
         @JsonIgnore
         @AssertTrue(message = "Passwords do not match")
         public boolean isConfirmPasswordValid() {
             // For @NotBlank check
-            if (newPassword == null || confirmPassword == null) {
+            if (newPassword == null || confirmNewPassword == null) {
                 return true;
             }
-            return newPassword.equals(confirmPassword);
+            return newPassword.equals(confirmNewPassword);
         }
     }
 

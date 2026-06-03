@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.gianghn.realtimecrowdgis.dto.UserDTO;
 import me.gianghn.realtimecrowdgis.entity.User;
+import me.gianghn.realtimecrowdgis.exception.specify.IllegalAccountStateException;
 import me.gianghn.realtimecrowdgis.exception.specify.InvalidCredentialsException;
 import me.gianghn.realtimecrowdgis.exception.specify.UserAlreadyExistsException;
 import me.gianghn.realtimecrowdgis.exception.specify.UserNotFoundException;
 import me.gianghn.realtimecrowdgis.mapper.UserMapper;
 import me.gianghn.realtimecrowdgis.repository.RefreshTokenRepository;
-import me.gianghn.realtimecrowdgis.repository.UserAuthProviderRepository;
 import me.gianghn.realtimecrowdgis.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final UserAuthProviderRepository userAuthProviderRepository;
+    private final UserAuthProviderService userAuthProviderService;
     private final UserMapper userMapper;
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenService tokenService;
@@ -56,7 +56,6 @@ public class UserService {
     public User createTempUser(User user) {
         user.setPassword(encodePassword(user.getPassword()));
         userRepository.save(user);
-        // test: kiểm tra lại ngày sinh của user đăng ký có hợp lệ dạng dd/mm/yyyy không ?
         return user;
     }
 
@@ -77,8 +76,7 @@ public class UserService {
 
     @Transactional
     public User updateUserProfile(UserDTO.UpdateProfileRequest request) {
-        User existingUser = userRepository.findById(request.userId())
-                                          .orElseThrow(() -> new UserNotFoundException("User not found with user id: " + request.userId() + " to update"));
+        User existingUser = userRepository.findById(request.userId()).orElseThrow(() -> new UserNotFoundException("User not found with user id: " + request.userId() + " to update"));
 
 
         if (request.username() != null && userRepository.existsUserByUsername(request.username())) {
@@ -94,22 +92,19 @@ public class UserService {
         userMapper.updateUserFromDTO(request, existingUser);
 
         return userRepository.save(existingUser);
-        // test: kiểm tra lại dob và updated_at field
     }
 
 
     @Transactional
     public void updateUserPassword(UserDTO.UpdatePasswordRequest request) {
-        User existingUser = userRepository.findById(request.userId())
-                                          .orElseThrow(() -> new UserNotFoundException("User not found with user id: " + request.userId() + " to update"));
+        User existingUser = userRepository.findById(request.userId()).orElseThrow(() -> new UserNotFoundException("User not found with user id: " + request.userId() + " to update"));
 
-        // test: kiểm tra xem password có bị null không ? (trường hợp user đăng ký bằng oauth2 thì password sẽ null)
-        if (existingUser.getPassword() == null) {
-            throw new UserNotFoundException("Password is already in use!");
+        if (existingUser.getPassword() != null && !checkPassword(request.currentPassword(), existingUser.getPassword())) {
+            throw new InvalidCredentialsException("Current newPassword is invalid!");
         }
 
-        if (!checkPassword(request.currentPassword(), existingUser.getPassword())) {
-            throw new InvalidCredentialsException("Current password is invalid!");
+        if (existingUser.getPassword() == null && userAuthProviderService.findByUserId(request.userId()).isEmpty()) {
+            throw new IllegalAccountStateException("No password and no social network linked");
         }
 
         existingUser.setPassword(encodePassword(request.newPassword()));

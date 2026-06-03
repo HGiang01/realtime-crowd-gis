@@ -1,9 +1,7 @@
 package me.gianghn.realtimecrowdgis.config;
 
-import lombok.RequiredArgsConstructor;
-import me.gianghn.realtimecrowdgis.security.jwt.JwtAuthenticationFilter;
-import me.gianghn.realtimecrowdgis.security.oauth2.OAuth2AuthenticationFailureHandler;
-import me.gianghn.realtimecrowdgis.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +15,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import me.gianghn.realtimecrowdgis.security.jwt.JwtAuthenticationFilter;
+import me.gianghn.realtimecrowdgis.security.oauth2.OAuth2AuthenticationFailureHandler;
+import me.gianghn.realtimecrowdgis.security.oauth2.OAuth2AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -38,8 +39,8 @@ public class SecurityConfig {
             "/api/v1/auth/verify-email",
             "/api/v1/auth/send-otp",
             "/api/v1/auth/refresh",
-            "/api/v1/auth/password/forgot",
-            "/api/v1/auth/password/reset",
+            "/api/v1/auth/forgot-password",
+            "/api/v1/auth/reset-password",
     };
 
     @Bean

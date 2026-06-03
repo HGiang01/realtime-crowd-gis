@@ -7,7 +7,6 @@ import me.gianghn.realtimecrowdgis.dto.AuthDTO;
 import me.gianghn.realtimecrowdgis.dto.AuthDTO.AuthResult;
 import me.gianghn.realtimecrowdgis.dto.AuthDTO.LoginRequest;
 import me.gianghn.realtimecrowdgis.dto.AuthDTO.RegisterRequest;
-import me.gianghn.realtimecrowdgis.dto.AuthDTO.RegisterResponse;
 import me.gianghn.realtimecrowdgis.dto.OtpDTO;
 import me.gianghn.realtimecrowdgis.service.AuthService;
 import me.gianghn.realtimecrowdgis.service.EmailService;
@@ -30,10 +29,10 @@ public class AuthController {
     private final CookieHelper cookieHelper;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<RegisterResponse>> register(@Valid @RequestBody RegisterRequest request) {
-        RegisterResponse newUser = authService.register(request);
+    public ResponseEntity<ApiResponse<Void>> register(@Valid @RequestBody RegisterRequest request) {
+        authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                             .body(ApiResponse.success("Temporary user registration successful. Please verify your email via OTP", newUser));
+                             .body(ApiResponse.success("Temporary user registration successful. Please verify your email via OTP"));
     }
 
 
@@ -68,10 +67,10 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("Email verified successfully!"));
     }
 
-    @PostMapping("/send-otp")
-    public ResponseEntity<ApiResponse<OtpDTO.SendResponse>> sendOtp(@Valid @RequestBody OtpDTO.SendRequest request) {
-        OtpDTO.SendResponse sendResponse = authService.sendOtp(request);
-        return ResponseEntity.ok(ApiResponse.success("OTP sent successfully!", sendResponse));
+    @PostMapping("/resend-otp")
+    public ResponseEntity<ApiResponse<OtpDTO.ResendResponse>> resendOtp(@Valid @RequestBody OtpDTO.ResendRequest request) {
+        OtpDTO.ResendResponse resendResponse = authService.resendOtp(request);
+        return ResponseEntity.ok(ApiResponse.success("OTP sent successfully!", resendResponse));
     }
 
     @PostMapping("/refresh")
@@ -82,13 +81,13 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("Access token refreshed successfully!", newAccessTokenResponse));
     }
 
-    @PostMapping("/password/forgot")
+    @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody AuthDTO.ForgotPasswordRequest request) {
         authService.forgotPassword(request);
         return ResponseEntity.ok(ApiResponse.success("An OTP has been sent to that email address. Please check your inbox to confirm."));
     }
 
-    @PostMapping("/password/reset")
+    @PostMapping("/reset-password")
     public ResponseEntity<ApiResponse<Void>> resetPassword(@Valid @RequestBody AuthDTO.ResetPasswordRequest request) {
         authService.resetPassword(request);
         ResponseCookie cookie = cookieHelper.clearRefreshTokenCookie();
