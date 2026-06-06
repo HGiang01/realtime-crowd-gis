@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+// refactor: email for single responsibility
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -41,6 +42,20 @@ public class EmailService {
         optStorage.put(toEmail, otp);
 
         return Instant.now();
+    }
+
+    public void sendNotification(String toEmail, String subject, String content, String notes) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        String mailBody = "Hello, \n\n"
+                + "You have a new notification from the Realtime Crowd GIS app.\n\n"
+                + content + "\n\n"
+                + notes + "\n\n"
+                + "Best regards,\n"
+                + "Realtime Crowd GIS Team";
+        message.setSubject("[Realtime Crowd GIS] " + subject);
+        message.setText(mailBody);
+        mailSender.send(message);
     }
 
     private String createOptCode() {

@@ -5,12 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.gianghn.realtimecrowdgis.dto.UserDTO;
 import me.gianghn.realtimecrowdgis.entity.User;
-import me.gianghn.realtimecrowdgis.exception.specify.IllegalAccountStateException;
-import me.gianghn.realtimecrowdgis.exception.specify.InvalidCredentialsException;
-import me.gianghn.realtimecrowdgis.exception.specify.UserAlreadyExistsException;
-import me.gianghn.realtimecrowdgis.exception.specify.UserNotFoundException;
+import me.gianghn.realtimecrowdgis.exception.specify.*;
 import me.gianghn.realtimecrowdgis.mapper.UserMapper;
-import me.gianghn.realtimecrowdgis.repository.RefreshTokenRepository;
 import me.gianghn.realtimecrowdgis.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,14 +20,9 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final UserAuthProviderService userAuthProviderService;
-    private final UserMapper userMapper;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final TokenService tokenService;
-
-    public UserDTO.GetMeResponse getMe(UUID userId) {
-        User user = userRepository.getMe(userId);
-        return userMapper.toGetMeResponse(user);
-    }
+    private final EmailService emailService;
+    private final UserMapper userMapper;
 
     public boolean existsUserByUsername(String username) {
         return userRepository.existsUserByUsername(username);
@@ -53,6 +44,19 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
+    public UserDTO.GetMeResponse getMe(UUID userId) {
+        User user = userRepository.findById(userId)
+                                  .orElseThrow(() -> new UserNotFoundException("User not found with user id: " + userId));
+        return userMapper.toGetMeResponse(user);
+    }
+
+    public UserDTO.GetUserResponse getUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                                  .orElseThrow(() -> new UserNotFoundException("User not found with user id: " + userId));
+
+        return userMapper.toGetUserResponse(user);
+    }
+
     public User createTempUser(User user) {
         user.setPassword(encodePassword(user.getPassword()));
         userRepository.save(user);
@@ -65,57 +69,80 @@ public class UserService {
     }
 
     @Transactional
-    public int updateUserStatus(UserDTO.UpdateStatusRequest request) {
-        return userRepository.updateStatus(request.userId(), request.status());
-    }
-
-    @Transactional
     public void updateUserStatus(UUID userId, User.UserStatus status) {
         userRepository.updateStatus(userId, status);
     }
 
     @Transactional
-    public User updateUserProfile(UserDTO.UpdateProfileRequest request) {
-        User existingUser = userRepository.findById(request.userId()).orElseThrow(() -> new UserNotFoundException("User not found with user id: " + request.userId() + " to update"));
+    public void updateUserProfile(UUID userId, UserDTO.UpdateProfileRequest request) {
+        User user = userRepository.findById(userId)
+                                  .orElseThrow(() -> new UserNotFoundException("User not found with user id: " + userId + " to update"));
 
 
         if (request.username() != null && userRepository.existsUserByUsername(request.username())) {
             throw new UserAlreadyExistsException("Username is already in use!");
         }
 
-        if (request.email() != null && userRepository.existsUserByEmail(request.email())) {
-            throw new UserAlreadyExistsException("Email is already in use!");
-        } else {
-            existingUser.setStatus(User.UserStatus.pending_verification);
-        }
-
-        userMapper.updateUserFromDTO(request, existingUser);
-
-        return userRepository.save(existingUser);
+        userMapper.updateUserFromDTO(request, user);
+        userRepository.save(user);
     }
 
 
     @Transactional
-    public void updateUserPassword(UserDTO.UpdatePasswordRequest request) {
-        User existingUser = userRepository.findById(request.userId()).orElseThrow(() -> new UserNotFoundException("User not found with user id: " + request.userId() + " to update"));
+    public void updateUserPassword(UUID userId, UserDTO.UpdatePasswordRequest request) {
+        User user = userRepository.findById(userId)
+                                  .orElseThrow(() -> new UserNotFoundException("User not found with user id: " + userId + " to update"));
 
-        if (existingUser.getPassword() != null && !checkPassword(request.currentPassword(), existingUser.getPassword())) {
-            throw new InvalidCredentialsException("Current newPassword is invalid!");
+        if (user.getPassword() != null && !checkPassword(request.currentPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Current password is invalid!");
         }
 
-        if (existingUser.getPassword() == null && userAuthProviderService.findByUserId(request.userId()).isEmpty()) {
-            throw new IllegalAccountStateException("No password and no social network linked");
+        if (user.getPassword() == null && userAuthProviderService.findByUserId(userId).isEmpty()) {
+            throw new IllegalAccountStateException("Password is required. No linked social accounts found.");
         }
 
-        existingUser.setPassword(encodePassword(request.newPassword()));
-        userRepository.save(existingUser);
+        user.setPassword(encodePassword(request.newPassword()));
+        userRepository.save(user);
 
-        refreshTokenRepository.deleteAllByUserId(existingUser.getId());
+        tokenService.revokeRefreshTokensByUserId(user.getId());
     }
 
     @Transactional
-    public void deleteUserByUserId(UserDTO.DeleteRequest request) {
-        userRepository.deleteByIdDirectly(request.userId());
+    public void updateUserStatus(UUID userId, UserDTO.UpdateStatusRequest request) {
+        User user = userRepository.findById(userId)
+                                  .orElseThrow(() -> new UserNotFoundException("User not found with user id: " + userId + " to delete"));
+
+        if (user.getRole() == User.UserRole.admin) {
+            throw new PermissionDeniedException("Insufficient permissions to change the status of an administrator account.");
+        }
+
+        if (request.status() != User.UserStatus.active) {
+            tokenService.revokeRefreshTokensByUserId(userId);
+        }
+
+        userRepository.updateStatus(userId, request.status());
+    }
+
+    @Transactional
+    public void notifyUser(UUID userId, UserDTO.NotifyRequest request) {
+        User user = userRepository.findById(userId)
+                                  .orElseThrow(() -> new UserNotFoundException("User not found with user id: " + userId + " to notify"));
+
+        String toEmail = user.getEmail();
+        emailService.sendNotification(toEmail, request.subject(), request.content(), request.notes());
+    }
+
+    @Transactional
+    public void deleteUserByUserId(UUID userId) {
+        User user = userRepository.findById(userId)
+                                  .orElseThrow(() -> new UserNotFoundException("User not found with user id: " + userId + " to delete"));
+
+        if (user.getRole() == User.UserRole.admin) {
+            throw new PermissionDeniedException("Insufficient permissions to delete an administrator account.");
+        }
+
+        tokenService.revokeRefreshTokensByUserId(userId);
+        userRepository.deleteByIdDirectly(userId);
     }
 
     private String encodePassword(String rawPassword) {

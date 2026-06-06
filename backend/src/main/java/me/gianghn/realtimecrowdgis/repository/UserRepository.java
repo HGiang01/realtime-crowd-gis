@@ -10,10 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
-    @Query("select u from User u where u.id = :id")
-    User getMe(@Param("id") UUID id);
-
-    Optional<User> findByUsername(String username);
+Optional<User> findByUsername(String username);
 
     Optional<User> findByEmail(String email);
 

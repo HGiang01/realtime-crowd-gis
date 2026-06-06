@@ -1,10 +1,14 @@
 package me.gianghn.realtimecrowdgis.config;
 
-import java.util.List;
-
+import lombok.RequiredArgsConstructor;
+import me.gianghn.realtimecrowdgis.security.jwt.CustomAccessDeniedHandler;
+import me.gianghn.realtimecrowdgis.security.jwt.JwtAuthenticationFilter;
+import me.gianghn.realtimecrowdgis.security.oauth2.OAuth2AuthenticationFailureHandler;
+import me.gianghn.realtimecrowdgis.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,19 +19,18 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import lombok.RequiredArgsConstructor;
-import me.gianghn.realtimecrowdgis.security.jwt.JwtAuthenticationFilter;
-import me.gianghn.realtimecrowdgis.security.oauth2.OAuth2AuthenticationFailureHandler;
-import me.gianghn.realtimecrowdgis.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final AuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Value("${app.frontend.url}")
     private String frontendUrl;
@@ -54,7 +57,8 @@ public class SecurityConfig {
             // Enable OAuth2 login flow and default login endpoints for external providers
             .oauth2Login(oauth2 -> oauth2.successHandler(oAuth2AuthenticationSuccessHandler)
                                          .failureHandler(oAuth2AuthenticationFailureHandler))
-            .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint));
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                                                     .accessDeniedHandler(customAccessDeniedHandler));
 
         // Add jwt filter
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

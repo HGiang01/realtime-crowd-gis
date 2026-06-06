@@ -1,8 +1,9 @@
 package me.gianghn.realtimecrowdgis.mapper;
 
 import me.gianghn.realtimecrowdgis.dto.AuthDTO.RegisterRequest;
-import me.gianghn.realtimecrowdgis.dto.UserDTO;
 import me.gianghn.realtimecrowdgis.dto.UserDTO.GetMeResponse;
+import me.gianghn.realtimecrowdgis.dto.UserDTO.GetUserResponse;
+import me.gianghn.realtimecrowdgis.dto.UserDTO.UpdateProfileRequest;
 import me.gianghn.realtimecrowdgis.entity.User;
 import org.mapstruct.*;
 
@@ -12,6 +13,8 @@ public interface UserMapper {
 
     GetMeResponse toGetMeResponse(User user);
 
+    GetUserResponse toGetUserResponse(User user);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateUserFromDTO(UserDTO.UpdateProfileRequest dto, @MappingTarget User existingUser);
+    void updateUserFromDTO(UpdateProfileRequest dto, @MappingTarget User existingUser);
 }

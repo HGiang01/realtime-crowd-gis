@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -71,6 +73,13 @@ public class GlobalExceptionHandler {
         log.error("Invalid JWT token: {}", e.getMessage(), e);
         ApiResponse<Void> errorMessage = ApiResponse.error("INVALID_TOKEN", e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
+    }
+
+    @ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(Exception e, HttpServletRequest request) {
+        log.error("Access denied: {}", e.getMessage(), e);
+        ApiResponse<Void> errorMessage = ApiResponse.error("FORBIDDEN", "You do not have permission to access this resource.", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorMessage);
     }
 
     // Catch-all for unexpected exceptions
