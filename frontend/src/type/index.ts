@@ -5,5 +5,7 @@ export type {
     RegisterRequest,
     VerifyEmailRequest
 } from "./auth";
-export type { User } from "./user";
+export type {
+    BasicUser, FullUser, UpdateProfileRequest, UpdatePasswordRequest, UpdateStatusRequest, NotifyRequest
+} from "./user.ts";
 export type { ApiResponse } from "./apiResponse";

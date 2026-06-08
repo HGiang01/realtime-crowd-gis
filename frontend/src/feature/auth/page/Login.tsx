@@ -144,7 +144,10 @@ export default function Login() {
                         <button
                             className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-wg-outline-variant px-4 py-3 text-sm font-medium text-on-wg-surface hover:border-wg-outline"
                             type="button"
-                            onClick={() => window.location.href = import.meta.env.VITE_API_OAUTH_URL}
+                            onClick={() =>
+                                (window.location.href =
+                                    import.meta.env.VITE_API_OAUTH_URL)
+                            }
                         >
                             Continue with Google
                         </button>

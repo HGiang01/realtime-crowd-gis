@@ -1,16 +1,10 @@
 import { create } from "zustand";
 import { authApi } from "@/api";
-import type {
-    LoginRequest,
-    RegisterRequest,
-    VerifyEmailRequest,
-    ResetPasswordRequest,
-    User,
-} from "@/type";
+import type { BasicUser, LoginRequest, RegisterRequest, ResetPasswordRequest, VerifyEmailRequest, } from "@/type";
 import { userApi } from "@/api/endpoint/user.api.ts";
 
 interface AuthState {
-    user: User | null;
+    user: BasicUser | null;
     pendingEmail: string | null;
     resetPasswordEmail: string | null;
     accessToken: string | null;
@@ -26,6 +20,7 @@ interface AuthState {
     resendOtp: (email: string) => Promise<boolean>;
     forgotPassword: (email: string) => Promise<boolean>;
     resetPassword: (payload: ResetPasswordRequest) => Promise<boolean>;
+    setUser: (user: BasicUser | null) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -38,7 +33,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     error: null,
 
     register: async (payload: RegisterRequest) => {
-        set({ isLoading: true, error: null });
+        set({isLoading: true, error: null});
         try {
             const registerResponse = await authApi.register(payload);
 
@@ -46,11 +41,11 @@ export const useAuthStore = create<AuthState>((set) => ({
                 registerResponse.status == 201 ||
                 registerResponse.data.code == "SUCCESS"
             ) {
-                set({ pendingEmail: payload.email, isLoading: false });
+                set({pendingEmail: payload.email, isLoading: false});
                 return true;
             }
 
-            set({ isLoading: false });
+            set({isLoading: false});
             return false;
         } catch (error: any) {
             set({
@@ -62,7 +57,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
 
     login: async (payload: LoginRequest) => {
-        set({ isLoading: true, error: null });
+        set({isLoading: true, error: null});
         try {
             await authApi.login(payload);
         } catch (error: any) {
@@ -89,7 +84,7 @@ export const useAuthStore = create<AuthState>((set) => ({
                 refreshAccessTokenResponse.data.details.accessToken;
             sessionStorage.setItem("access_token", accessToken);
 
-            const getProfileResponse = await userApi.getProfile();
+            const getProfileResponse = await userApi.getMe();
             if (!getProfileResponse.data.details) {
                 await authApi.logout();
                 sessionStorage.removeItem("access_token");
@@ -137,7 +132,7 @@ export const useAuthStore = create<AuthState>((set) => ({
                 refreshAccessTokenResponse.data.details.accessToken;
             sessionStorage.setItem("access_token", accessToken);
 
-            const getProfileResponse = await userApi.getProfile();
+            const getProfileResponse = await userApi.getMe();
             if (!getProfileResponse.data.details) {
                 await authApi.logout();
                 sessionStorage.removeItem("access_token");
@@ -169,24 +164,24 @@ export const useAuthStore = create<AuthState>((set) => ({
         }
     },
     logout: async () => {
+        await authApi.logout();
         sessionStorage.removeItem("access_token");
         set({
             user: null,
             accessToken: null,
             isAuthenticated: false,
         });
-        await authApi.logout();
     },
 
     verifyEmail: async (payload: VerifyEmailRequest) => {
-        set({ isLoading: true, error: null });
+        set({isLoading: true, error: null});
         try {
             const verifyEmailResponse = await authApi.verifyEmail(payload);
             if (verifyEmailResponse.status === 200) {
-                set({ pendingEmail: null, isLoading: false });
+                set({pendingEmail: null, isLoading: false});
                 return true;
             }
-            set({ isLoading: false });
+            set({isLoading: false});
             return false;
         } catch (error: any) {
             set({
@@ -200,7 +195,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
 
     resendOtp: async (email: string) => {
-        set({ error: null });
+        set({error: null});
         try {
             const sendOtpResponse = await authApi.resendOtp(email);
             return sendOtpResponse.status === 200;
@@ -213,14 +208,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
 
     forgotPassword: async (email: string) => {
-        set({ isLoading: true, error: null });
+        set({isLoading: true, error: null});
         try {
             const forgotPasswordResponse = await authApi.forgotPassword(email);
             if (forgotPasswordResponse.status === 200) {
-                set({ resetPasswordEmail: email, isLoading: false });
+                set({resetPasswordEmail: email, isLoading: false});
                 return true;
             }
-            set({ isLoading: false });
+            set({isLoading: false});
             return false;
         } catch (error: any) {
             set({
@@ -234,14 +229,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
 
     resetPassword: async (payload: ResetPasswordRequest) => {
-        set({ isLoading: true, error: null });
+        set({isLoading: true, error: null});
         try {
             const resetPasswordResponse = await authApi.resetPassword(payload);
             if (resetPasswordResponse.status === 200) {
-                set({ resetPasswordEmail: null, isLoading: false });
+                set({resetPasswordEmail: null, isLoading: false});
                 return true;
             }
-            set({ isLoading: false });
+            set({isLoading: false});
             return false;
         } catch (error: any) {
             set({
@@ -252,4 +247,6 @@ export const useAuthStore = create<AuthState>((set) => ({
             return false;
         }
     },
+
+    setUser: (user) => set({user}),
 }));
