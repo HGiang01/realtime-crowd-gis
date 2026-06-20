@@ -1,19 +1,13 @@
 package me.gianghn.realtimecrowdgis.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.*;
+import me.gianghn.realtimecrowdgis.entity.User;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import me.gianghn.realtimecrowdgis.entity.User;
 
 public interface UserDTO {
     record UpdateStatusRequest(

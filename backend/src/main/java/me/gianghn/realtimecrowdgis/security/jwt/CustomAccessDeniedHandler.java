@@ -1,5 +1,6 @@
 package me.gianghn.realtimecrowdgis.security.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
-import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
@@ -22,9 +22,15 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     private final ObjectMapper objectMapper;
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+    public void handle(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AccessDeniedException accessDeniedException
+    ) throws IOException, ServletException {
         log.error("Access denied: {}", accessDeniedException.getMessage(), accessDeniedException);
-        ApiResponse<Void> errorMessage = ApiResponse.error("FORBIDDEN", "You do not have permission to access this resource ", request.getRequestURI());
+        ApiResponse<Void> errorMessage = ApiResponse.error("FORBIDDEN",
+                                                           "You do not have permission to access this resource ",
+                                                           request.getRequestURI());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.getOutputStream().println(objectMapper.writeValueAsString(errorMessage));
