@@ -43,6 +43,7 @@ public interface ReportMapper {
 
     ReportDTO.GetLocationReportListResponse toLocationReportListResponse(LocationReport locationReport);
 
+    @Mapping(target = "category", defaultValue = "other")
     @Mapping(target = "geomPoint", expression = "java(createPoint(dto.longitude(), dto.latitude()))")
     LocationReport toLocationReport(ReportDTO.CreateLocationRequest dto);
 
