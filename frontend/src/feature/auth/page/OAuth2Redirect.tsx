@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/store";
 import Header from "@/feature/auth/component/Header.tsx";
@@ -9,25 +9,11 @@ const OAuth2Redirect = () => {
     const location = useLocation();
     const { loginWithOAuth2 } = useAuthStore();
 
-    // 1. Extract URL parameters during initial render
     const searchParams = new URLSearchParams(location.search);
     const errorCode = searchParams.get("error-code");
     const errorMessage = searchParams.get("error-message");
 
-    // 2. Initialize state derived from URL to avoid cascading renders
-    const [statusMessage, setStatusMessage] = useState(() => {
-        if (errorCode) return `Authentication could not be completed. ${errorMessage}. You will be redirected shortly.`;
-        return "Processing OAuth2 login. You will be redirected automatically.";
-    });
-
-    // Prevent double execution in React 18 Strict Mode
-    const isProcessing = useRef(false);
-
     useEffect(() => {
-        if (isProcessing.current) return;
-        isProcessing.current = true;
-
-        // Handle authentication failure
         if (errorCode) {
             const timer = setTimeout(() => {
                 navigate("/auth/login", { replace: true });
@@ -36,23 +22,28 @@ const OAuth2Redirect = () => {
             return () => clearTimeout(timer);
         }
 
+        let isMounted = true;
+
         const processLogin = async () => {
             try {
                 await loginWithOAuth2();
-                navigate("/home", { replace: true });
+                if (isMounted) navigate("/home", { replace: true });
             } catch (error) {
                 console.error("Login process failed:", error);
 
-                setStatusMessage(
-                    "Failed to retrieve user data. Redirecting to login...",
-                );
-                setTimeout(() => {
-                    navigate("/auth/login", { replace: true });
-                }, 3000);
+                if (isMounted) {
+                    setTimeout(() => {
+                        navigate("/auth/login", { replace: true });
+                    }, 3000);
+                }
             }
         };
 
         processLogin();
+
+        return () => {
+            isMounted = false;
+        };
     }, [errorCode, loginWithOAuth2, navigate]);
 
     return (
@@ -84,7 +75,9 @@ const OAuth2Redirect = () => {
                                 OAuth2 Sign In
                             </h2>
                             <p className="text-sm text-on-wg-surface-variant">
-                                {statusMessage}
+                                {errorCode
+                                    ? `Authentication could not be completed. ${errorMessage}. You will be redirected shortly.`
+                                    : "Processing OAuth2 login. You will be redirected automatically."}
                             </p>
                         </div>
                     </div>

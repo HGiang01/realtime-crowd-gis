@@ -1,20 +1,14 @@
 package me.gianghn.realtimecrowdgis.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.*;
+import me.gianghn.realtimecrowdgis.entity.RefreshToken;
+import me.gianghn.realtimecrowdgis.entity.User;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import me.gianghn.realtimecrowdgis.entity.RefreshToken;
-import me.gianghn.realtimecrowdgis.entity.User;
 
 public interface AuthDTO {
     record RegisterRequest(
@@ -25,11 +19,10 @@ public interface AuthDTO {
             String username,
 
             @NotBlank(message = "Password is required")
-            // prod: turn on
-            // @Pattern(
-            //         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])\\S{8,}$", 
-            //         message = "Password must be at least 8 characters long, contain no spaces, and include uppercase, lowercase, number, and special character"
-            // )
+            @Pattern(
+                    regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])\\S{8,}$",
+                    message = "Password must be at least 8 characters long, contain no spaces, and include uppercase, lowercase, number, and special character"
+            )
             String password,
 
             @NotBlank(message = "Confirm password is required")
@@ -78,11 +71,10 @@ public interface AuthDTO {
             String email,
 
             @NotBlank(message = "New password is required")
-            // prod: turn on
-            // @Pattern(
-            //         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])\\S{8,}$",
-            //         message = "Password must be at least 8 characters long, contain no spaces, and include uppercase, lowercase, number, and special character"
-            // )
+            @Pattern(
+                    regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])\\S{8,}$",
+                    message = "Password must be at least 8 characters long, contain no spaces, and include uppercase, lowercase, number, and special character"
+            )
             String newPassword,
 
             @NotBlank(message = "Confirm new password is required")

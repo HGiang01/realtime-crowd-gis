@@ -20,6 +20,7 @@ interface AuthState {
     resendOtp: (email: string) => Promise<boolean>;
     forgotPassword: (email: string) => Promise<boolean>;
     resetPassword: (payload: ResetPasswordRequest) => Promise<boolean>;
+    getMe: () => Promise<void>;
     setUser: (user: BasicUser | null) => void;
 }
 
@@ -245,6 +246,34 @@ export const useAuthStore = create<AuthState>((set) => ({
                 isLoading: false,
             });
             return false;
+        }
+    },
+
+    getMe: async () => {
+        try {
+            set({isLoading: true, error: null});
+
+            const getProfileResponse = await userApi.getMe();
+            if (!getProfileResponse.data.details) {
+                set({
+                    isLoading: false,
+                    error: "Failed to retrieve user profile",
+                });
+            }
+
+            set({
+                user: getProfileResponse.data.details,
+                isAuthenticated: true,
+                isLoading: false,
+            });
+        } catch (error: any) {
+            set({
+                isLoading: false,
+                error:
+                    error.response?.data?.message ||
+                    error.message ||
+                    "Failed to retrieve user profile",
+            });
         }
     },
 

@@ -1,0 +1,11 @@
+{
+	"namespace": "me.gianghn.realtimecrowdgis.event",
+	"type": "record",
+	"name": "IncidentReportClosedEvent",
+	"fields": [
+		{
+			"name": "id",
+			"type": "string"
+		}
+	]
+}

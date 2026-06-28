@@ -36,11 +36,10 @@ public interface UserDTO {
             String currentPassword,
 
             @NotBlank(message = "New password is required")
-            // prod: turn on
-            // @Pattern(
-            //         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])\\S{8,}$",
-            //         message = "Password must be at least 8 characters long, contain no spaces, and include uppercase, lowercase, number, and special character"
-            // )
+            @Pattern(
+                    regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])\\S{8,}$",
+                    message = "Password must be at least 8 characters long, contain no spaces, and include uppercase, lowercase, number, and special character"
+            )
             String newPassword,
 
             @NotBlank(message = "Confirm new password is required")
@@ -69,6 +68,8 @@ public interface UserDTO {
     }
 
     record GetMeResponse(
+            UUID id,
+
             String username,
 
             User.UserRole role,

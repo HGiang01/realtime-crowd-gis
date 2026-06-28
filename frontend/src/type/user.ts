@@ -7,6 +7,7 @@ export type UserStatus =
     | "inappropriate_language";
 
 export interface BasicUser {
+    id: string;
     username: string;
     role: UserRole;
     email: string;
@@ -15,7 +16,6 @@ export interface BasicUser {
 }
 
 export interface FullUser extends BasicUser {
-    id: string;
     status: UserStatus;
     createdAt: string;
     updatedAt: string;

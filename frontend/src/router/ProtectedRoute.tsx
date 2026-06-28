@@ -1,12 +1,21 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuthStore } from '@/store';
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuthStore } from "@/store";
+import {ForbiddenPage} from "@/page";
 
-export default function ProtectedRoute() {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+interface ProtectedRouteProps {
+    requiredRole?: string;
+}
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+export default function ProtectedRoute({ requiredRole }: ProtectedRouteProps) {
+    const { isAuthenticated, user, isLoading } = useAuthStore();
 
-  return <Outlet />;
+    if (isLoading) return <div>Loading...</div>;
+
+    if (!isAuthenticated) return <Navigate to="/auth/login" replace />;
+
+    if (requiredRole && user?.role !== requiredRole) {
+        return <ForbiddenPage />;
+    }
+
+    return <Outlet />;
 }
