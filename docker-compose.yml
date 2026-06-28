@@ -128,8 +128,8 @@ services:
       dockerfile: Dockerfile
     container_name: rgc_frontend
     restart: always
-    ports:
-      - "80:80"
+    # ports:
+    #   - "80:80"
     depends_on:
       - backend
 
