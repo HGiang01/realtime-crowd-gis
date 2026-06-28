@@ -67,6 +67,11 @@
     --font-mono: "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
 }
 
+/* Custom close button for map popups */
+.maplibregl-popup-close-button {
+    @apply px-2 text-on-wg-surface bg-transparent rounded-full p-1 opacity-70 hover:opacity-100 transition-opacity;
+}
+
 /* * ==========================================================================
  * GLOBAL STYLES (Base setup & overrides)
  * ==========================================================================
@@ -104,4 +109,56 @@
     .material-symbols-outlined.fill {
         font-variation-settings: "FILL" 1;
     }
+}
+
+@layer components {
+    /* Custom button styles */
+    .btn-primary-solid {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-wg-primary text-on-wg-primary hover:bg-wg-primary-container;
+    }
+
+    .btn-primary-outline {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-wg-primary bg-transparent text-wg-primary hover:bg-wg-primary/10;
+    }
+
+    .btn-neutral-solid {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-wg-surface-container text-on-wg-surface hover:bg-wg-outline-variant hover:text-black;
+    }
+
+    .btn-neutral-outline {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-wg-outline bg-transparent text-on-wg-surface hover:bg-wg-surface-container;
+    }
+
+    .btn-success-solid {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-wg-success text-white hover:bg-wg-success/80;
+    }
+
+    .btn-success-outline {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-wg-success bg-transparent text-wg-success hover:bg-wg-success/10;
+    }
+
+    .btn-warning-solid {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-orange-400 text-white hover:bg-orange-500;
+    }
+
+    .btn-warning-outline {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-orange-400 bg-transparent text-orange-400 hover:bg-orange-400/10;
+    }
+
+    .btn-error-solid {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-wg-error text-on-wg-error hover:bg-wg-error/80;
+    }
+
+    .btn-error-outline {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-wg-error bg-transparent text-wg-error hover:bg-wg-error/10;
+    }
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none !important;
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
 }
