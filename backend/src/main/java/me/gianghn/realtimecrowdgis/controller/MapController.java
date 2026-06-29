@@ -22,9 +22,9 @@ public class MapController {
 
     @GetMapping(value = "/location/{z}/{x}/{y}.pbf", produces = "application/x-protobuf")
     public ResponseEntity<byte[]> getLocationTile(
-            @PathVariable int z,
-            @PathVariable int x,
-            @PathVariable int y
+            @PathVariable("z") int z,
+            @PathVariable("x") int x,
+            @PathVariable("y") int y
     ) {
         byte[] tileData = mapService.getLocationTile(z, x, y);
         if (tileData != null) {
@@ -36,9 +36,9 @@ public class MapController {
 
     @GetMapping(value = "/pending/{z}/{x}/{y}.pbf", produces = "application/x-protobuf")
     public ResponseEntity<byte[]> getPendingTile(
-            @PathVariable int z,
-            @PathVariable int x,
-            @PathVariable int y
+            @PathVariable("z") int z,
+            @PathVariable("x") int x,
+            @PathVariable("y") int y
     ) {
         byte[] tileData = mapService.getPendingTile(z, x, y);
         if (tileData != null) {
@@ -50,9 +50,9 @@ public class MapController {
 
     @GetMapping(value = "/processing/{z}/{x}/{y}.pbf", produces = "application/x-protobuf")
     public ResponseEntity<byte[]> getProcessingTile(
-            @PathVariable int z,
-            @PathVariable int x,
-            @PathVariable int y
+            @PathVariable("z") int z,
+            @PathVariable("x") int x,
+            @PathVariable("y") int y
     ) {
         byte[] tileData = mapService.getProcessingTile(z, x, y);
         if (tileData != null) {
@@ -63,14 +63,14 @@ public class MapController {
     }
 
     @GetMapping("/locations/{id}")
-    public ResponseEntity<ApiResponse<MapDTO.GetLocationResponse>> getLocationDetail(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<MapDTO.GetLocationResponse>> getLocationDetail(@PathVariable("id") UUID id) {
         MapDTO.GetLocationResponse location = mapService.getLocationById(id);
         return ResponseEntity.ok(ApiResponse.success("Get location detail successfully", location));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/locations/{id}/revisions")
-    public ResponseEntity<ApiResponse<Set<MapDTO.GetLocationResponse>>> getLocationRevisions(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Set<MapDTO.GetLocationResponse>>> getLocationRevisions(@PathVariable("id") UUID id) {
         Set<MapDTO.GetLocationResponse> revisions = mapService.getLocationRevisionsById(id);
         return ResponseEntity.ok(ApiResponse.success("Get location revisions detail successfully", revisions));
     }

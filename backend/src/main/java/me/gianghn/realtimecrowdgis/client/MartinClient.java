@@ -9,22 +9,22 @@ import org.springframework.web.service.annotation.HttpExchange;
 public interface MartinClient {
     @GetExchange("/current_locations_view/{z}/{x}/{y}")
     ResponseEntity<byte[]> getLocationTile(
-            @PathVariable int z,
-            @PathVariable int x,
-            @PathVariable int y
+            @PathVariable("z") int z,
+            @PathVariable("x") int x,
+            @PathVariable("y") int y
     );
 
     @GetExchange("/pending_incident_view/{z}/{x}/{y}")
     ResponseEntity<byte[]> getPendingTile(
-            @PathVariable int z,
-            @PathVariable int x,
-            @PathVariable int y
+            @PathVariable("z") int z,
+            @PathVariable("x") int x,
+            @PathVariable("y") int y
     );
 
     @GetExchange("/processing_incident_view/{z}/{x}/{y}")
     ResponseEntity<byte[]> getProcessingTile(
-            @PathVariable int z,
-            @PathVariable int x,
-            @PathVariable int y
+            @PathVariable("z") int z,
+            @PathVariable("x") int x,
+            @PathVariable("y") int y
     );
 }

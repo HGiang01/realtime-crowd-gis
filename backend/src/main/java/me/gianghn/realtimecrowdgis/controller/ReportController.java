@@ -72,7 +72,7 @@ public class ReportController {
     @GetMapping("/reports/locations/{id}")
     public ResponseEntity<ApiResponse<GetLocationReportResponse>> getLocationReportDetail(
             @AuthenticationPrincipal UUID userId,
-            @PathVariable UUID id
+            @PathVariable("id") UUID id
     ) {
         GetLocationReportResponse locationReport = service.getLocationReportByIdAndUserId(id, userId);
         return ResponseEntity.ok(ApiResponse.success("Get user location report successfully", locationReport));
@@ -82,7 +82,7 @@ public class ReportController {
     @GetMapping("/reports/incidents/{id}")
     public ResponseEntity<ApiResponse<GetIncidentReportResponse>> getIncidentReportDetail(
             @AuthenticationPrincipal UUID userId,
-            @PathVariable UUID id
+            @PathVariable("id") UUID id
     ) {
         GetIncidentReportResponse incidentReport = service.getIncidentReportByIdAndUserId(id, userId);
         return ResponseEntity.ok(ApiResponse.success("Get incident report successfully", incidentReport));
@@ -179,7 +179,7 @@ public class ReportController {
     @GetMapping("/admin/reports/locations/{id}")
     public ResponseEntity<ApiResponse<GetLocationReportResponse>> getAdminLocationReportDetail(
             @AuthenticationPrincipal UUID adminId,
-            @PathVariable UUID id
+            @PathVariable("id") UUID id
     ) {
         GetLocationReportResponse report = service.getLocationReportByIdAndAdminId(id, adminId);
         return ResponseEntity.ok(ApiResponse.success("Get location report successfully", report));
@@ -189,7 +189,7 @@ public class ReportController {
     @GetMapping("/admin/reports/incidents/{id}")
     public ResponseEntity<ApiResponse<GetIncidentReportResponse>> getAdminIncidentReportDetail(
             @AuthenticationPrincipal UUID adminId,
-            @PathVariable UUID id
+            @PathVariable("id") UUID id
     ) {
         GetIncidentReportResponse report = service.getIncidentReportByIdAndAdminId(id, adminId);
         return ResponseEntity.ok(ApiResponse.success("Get incident report successfully", report));
@@ -199,7 +199,7 @@ public class ReportController {
     @PatchMapping("/admin/reports/locations/{id}/assign")
     public ResponseEntity<ApiResponse<Void>> assignLocationReport(
             @AuthenticationPrincipal UUID adminId,
-            @PathVariable UUID id
+            @PathVariable("id") UUID id
     ) {
         service.assignLocationReport(id, adminId);
         return ResponseEntity.ok(ApiResponse.success("Location report assigned successfully"));
@@ -209,7 +209,7 @@ public class ReportController {
     @PatchMapping("/admin/reports/incidents/{id}/assign")
     public ResponseEntity<ApiResponse<Void>> assignIncidentReport(
             @AuthenticationPrincipal UUID adminId,
-            @PathVariable UUID id
+            @PathVariable("id") UUID id
     ) {
         service.assignIncidentReport(id, adminId);
         return ResponseEntity.ok(ApiResponse.success("Incident report assigned successfully", null));
@@ -219,7 +219,7 @@ public class ReportController {
     @PatchMapping("/admin/reports/locations/{id}/approve")
     public ResponseEntity<ApiResponse<Void>> approveLocationReport(
             @AuthenticationPrincipal UUID adminId,
-            @PathVariable UUID id
+            @PathVariable("id") UUID id
     ) {
         service.approveLocationReport(id, adminId);
         return ResponseEntity.ok(ApiResponse.success("Location report approved successfully"));
@@ -229,7 +229,7 @@ public class ReportController {
     @PatchMapping("/admin/reports/locations/{id}/reject")
     public ResponseEntity<ApiResponse<Void>> rejectLocationReport(
             @AuthenticationPrincipal UUID adminId,
-            @PathVariable UUID id
+            @PathVariable("id") UUID id
     ) {
         service.rejectLocationReport(id, adminId);
         return ResponseEntity.ok(ApiResponse.success("Location report rejected successfully"));
@@ -238,7 +238,7 @@ public class ReportController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/reports/locations/{id}/revisions")
     public ResponseEntity<ApiResponse<List<GetLocationRevisionResponse>>> getLocationRevisions(
-            @PathVariable UUID id
+            @PathVariable("id") UUID id
     ) {
         List<GetLocationRevisionResponse> revisions = service.getRevisionsByLocationReportId(id);
         return ResponseEntity.ok(ApiResponse.success("Get location revisions successfully", revisions));
@@ -248,7 +248,7 @@ public class ReportController {
     @PostMapping(value = "/admin/reports/incidents/{id}/result", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Void>> createIncidentResult(
             @AuthenticationPrincipal UUID adminId,
-            @PathVariable UUID id,
+            @PathVariable("id") UUID id,
             @Valid @ModelAttribute CreateIncidentResultRequest request
     ) {
         service.createIncidentReportResult(id, adminId, request);
@@ -259,7 +259,7 @@ public class ReportController {
     @PatchMapping(value = "/admin/reports/incidents/{id}/result", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Void>> updateIncidentResult(
             @AuthenticationPrincipal UUID adminId,
-            @PathVariable UUID id,
+            @PathVariable("id") UUID id,
             @ModelAttribute UpdateIncidentResultRequest request
     ) {
         service.updateIncidentReportResult(id, adminId, request);
@@ -279,7 +279,7 @@ public class ReportController {
     @PatchMapping("/reports/incidents/{id}/result/rating")
     public ResponseEntity<ApiResponse<Void>> ratingIncidentResult(
             @AuthenticationPrincipal UUID userId,
-            @PathVariable UUID id,
+            @PathVariable("id") UUID id,
             @Valid @RequestBody ReportDTO.RatingIncidentReportResultRequest request
     ) {
         service.ratingIncidentResult(id, userId, request);
