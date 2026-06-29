@@ -26,6 +26,11 @@ export default function AdminLocationReview() {
         null,
     );
 
+    const canClaim = currentReport?.status === "pending_review";
+    const canApproveReject =
+        currentReport?.status === "processing" &&
+        currentReport?.resolverId === user?.id;
+
     const selectedRevision =
         selectedRevisionId && revisions
             ? revisions.find((rev: any) => rev.id === selectedRevisionId) ||
@@ -428,8 +433,7 @@ export default function AdminLocationReview() {
                                         >
                                             Back
                                         </Link>
-                                        {currentReport.status ===
-                                            "pending_review" && (
+                                        {canClaim && (
                                             <>
                                                 <button
                                                     className="btn-primary-outline text-xs sm:text-sm py-2 px-1 sm:px-4"
@@ -437,6 +441,24 @@ export default function AdminLocationReview() {
                                                 >
                                                     Claim
                                                 </button>
+                                                <button
+                                                    className="btn-error-outline text-xs sm:text-sm py-2 px-1 sm:px-4"
+                                                    onClick={handleRejectReport}
+                                                >
+                                                    Reject
+                                                </button>
+                                                <button
+                                                    className="btn-success-outline text-xs sm:text-sm py-2 px-1 sm:px-4"
+                                                    onClick={
+                                                        handleApproveReport
+                                                    }
+                                                >
+                                                    Approve
+                                                </button>
+                                            </>
+                                        )}
+                                        {canApproveReject && (
+                                            <>
                                                 <button
                                                     className="btn-error-outline text-xs sm:text-sm py-2 px-1 sm:px-4"
                                                     onClick={handleRejectReport}
