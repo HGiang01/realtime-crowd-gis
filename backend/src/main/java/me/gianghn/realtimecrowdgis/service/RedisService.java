@@ -17,7 +17,7 @@ public class RedisService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisTemplate<String, byte[]> redisBytesTemplate;
 
-    @Value("${app.otp.expirationMins}")
+    @Value("${app.otp.expiration-mins}")
     private int otpExpirationMins;
 
     public void invalidatePendingTiles() {

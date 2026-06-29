@@ -6,13 +6,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CookieHelper {
-    @Value("${app.jwt.refreshExpirationDays}")
+    @Value("${app.jwt.refresh-expiration-days}")
     private long refreshExpirationDays;
 
     @Value("${app.cookie.secure}")
     private boolean isSecure;
 
-    @Value("${app.cookie.sameSite}")
+    @Value("${app.cookie.same-site}")
     private String sameSite;
 
     public ResponseCookie createRefreshTokenCookie(String refreshToken) {

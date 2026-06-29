@@ -32,7 +32,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     @Value("${app.frontend.oauth2-redirect-url}")
     private String frontendRedirectUrl;
-    @Value("${app.jwt.refreshExpirationDays}")
+    @Value("${app.jwt.refresh-expiration-days}")
     private int refreshExpirationDays;
 
     @Override

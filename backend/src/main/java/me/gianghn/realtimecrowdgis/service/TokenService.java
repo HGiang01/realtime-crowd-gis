@@ -32,10 +32,10 @@ public class TokenService {
     @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    @Value("${app.jwt.expirationMs}")
+    @Value("${app.jwt.expiration-ms}")
     private long jwtExpirationMs;
 
-    @Value("${app.jwt.refreshExpirationDays}")
+    @Value("${app.jwt.refresh-expiration-days}")
     private int refreshExpirationDays;
 
     private SecretKey getSigningKey() {
