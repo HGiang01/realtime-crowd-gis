@@ -73,13 +73,13 @@ export default function AdminLocationReview() {
     }, [id, fetchAdminReportById, fetchAdminLocationRevisions]);
 
     return (
-        <div className="flex flex-col relative min-h-screen overflow-y-auto lg:overflow-hidden bg-wg-background text-on-wg-background">
+        <div className="flex flex-col relative min-h-screen lg:h-screen overflow-y-auto lg:overflow-hidden bg-wg-background text-on-wg-background">
             <div className="pointer-events-none absolute -left-32 top-12 h-80 w-80 rounded-full bg-wg-primary-soft blur-3xl" />
             <div className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-wg-primary-container/30 blur-3xl" />
 
             <Header />
 
-            <main className="flex-1 flex flex-col z-10 max-w-7xl w-full mx-auto min-h-full p-4 md:p-8">
+            <main className="flex-1 flex flex-col z-10 max-w-7xl w-full mx-auto min-h-full lg:min-h-0 p-4 md:p-8">
                 <section style={{ animationDelay: "240ms" }} className="mb-4">
                     <h1 className="fade-up text-2xl md:text-3xl font-bold">
                         Location Report Review
@@ -96,7 +96,7 @@ export default function AdminLocationReview() {
 
                 {currentReport && (
                     <section className="flex-1 flex flex-col lg:flex-row gap-6 md:gap-8 lg:min-h-0 pb-8 lg:pb-0">
-                        <div className="flex-1 flex flex-col">
+                        <div className="flex-1 flex flex-col lg:min-h-0">
                             <h2 className="text-lg md:text-xl mb-2 text-on-wg-background/80 shrink-0">
                                 New Location Report
                             </h2>
