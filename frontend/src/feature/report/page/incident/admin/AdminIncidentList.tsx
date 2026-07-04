@@ -109,7 +109,7 @@ export default function AdminIncidentList() {
 
             <Header />
 
-            <main className="flex-1 relative z-10 w-full max-w-7xl mx-auto px-6 py-8 flex flex-col gap-2">
+            <main className="flex-1 relative z-10 w-full max-w-350 mx-auto px-6 py-8 flex flex-col gap-2">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <h1 className="text-3xl font-bold text-on-wg-surface mb-2 tracking-tight">
                         My incident reports task
@@ -176,7 +176,8 @@ export default function AdminIncidentList() {
                             <SearchAlert size={40} />
                             <h2 className="mt-2 text-2xl">Reports not found</h2>
                             <p className="text-sm">
-                                You haven't claimed any incident reports yet. <br />
+                                You haven't claimed any incident reports yet.{" "}
+                                <br />
                                 Claim your first incident report to get started.
                             </p>
                             <Link
@@ -193,6 +194,7 @@ export default function AdminIncidentList() {
                     <Pagination
                         number={pagination!.number}
                         totalPages={pagination!.totalPages}
+                        onPageChange={setCurrentPage}
                     />
                 )}
             </main>

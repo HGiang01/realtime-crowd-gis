@@ -166,6 +166,7 @@ export default function AdminLocationPending() {
                         <Pagination
                             number={pagination.number}
                             totalPages={pagination.totalPages}
+                            onPageChange={setCurrentPage}
                         />
                     </div>
                 )}
