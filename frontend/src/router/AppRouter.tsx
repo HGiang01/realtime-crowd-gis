@@ -17,7 +17,10 @@ import { useAuthStore } from "@/store/authStore";
 
 export default function AppRouter() {
     const {getMe, isAuthenticated, user} = useAuthStore();
+    const hasAccessToken = !!sessionStorage.getItem("access_token");
+
     useEffect(() => {
+        if (!hasAccessToken) return;
         if (isAuthenticated && user) return;
 
         (async () => {
