@@ -30,13 +30,18 @@ export default function AdminLocationReview() {
     const canApproveReject =
         currentReport?.status === "processing" &&
         currentReport?.resolverId === user?.id;
+    const sortedRevisions = [...(revisions ?? [])].sort(
+        (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
 
     const selectedRevision =
-        selectedRevisionId && revisions
-            ? revisions.find((rev: any) => rev.id === selectedRevisionId) ||
-              revisions[0]
-            : revisions && revisions.length > 0
-              ? revisions[0]
+        selectedRevisionId && sortedRevisions.length > 0
+            ? sortedRevisions.find(
+                  (rev: any) => rev.id === selectedRevisionId,
+              ) || sortedRevisions[0]
+            : sortedRevisions.length > 0
+              ? sortedRevisions[0]
               : null;
 
     const handleAssignReport = async () => {
@@ -252,39 +257,41 @@ export default function AdminLocationReview() {
                                                 tabIndex={0}
                                                 className="dropdown-content menu bg-base-100 rounded-box z-20 w-full p-2 shadow-lg border border-wg-outline-variant/70 mt-1 max-h-60 overflow-y-auto absolute left-0"
                                             >
-                                                {revisions.map((rev: any) => (
-                                                    <li key={rev.id}>
-                                                        <button
-                                                            onClick={() => {
-                                                                setSelectedRevisionId(
-                                                                    rev.id,
-                                                                );
-                                                                (
-                                                                    document.activeElement as HTMLElement
-                                                                )?.blur();
-                                                            }}
-                                                            className={`flex flex-col sm:flex-row sm:justify-between items-start sm:items-center w-full py-2 ${
-                                                                selectedRevision?.id ===
-                                                                rev.id
-                                                                    ? "bg-wg-primary/10 text-wg-primary font-bold"
-                                                                    : ""
-                                                            }`}
-                                                        >
-                                                            <span className="truncate mr-2 text-xs md:text-[13px] font-mono">
-                                                                {rev.id.substring(
-                                                                    0,
-                                                                    12,
-                                                                )}
-                                                                ...
-                                                            </span>
-                                                            <span className="text-[10px] md:text-xs opacity-70 whitespace-nowrap mt-1 sm:mt-0">
-                                                                {formatDateToLocaleVI(
-                                                                    rev.createdAt,
-                                                                )}
-                                                            </span>
-                                                        </button>
-                                                    </li>
-                                                ))}
+                                                {sortedRevisions.map(
+                                                    (rev: any) => (
+                                                        <li key={rev.id}>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setSelectedRevisionId(
+                                                                        rev.id,
+                                                                    );
+                                                                    (
+                                                                        document.activeElement as HTMLElement
+                                                                    )?.blur();
+                                                                }}
+                                                                className={`flex flex-col sm:flex-row sm:justify-between items-start sm:items-center w-full py-2 ${
+                                                                    selectedRevision?.id ===
+                                                                    rev.id
+                                                                        ? "bg-wg-primary/10 text-wg-primary font-bold"
+                                                                        : ""
+                                                                }`}
+                                                            >
+                                                                <span className="truncate mr-2 text-xs md:text-[13px] font-mono">
+                                                                    {rev.id.substring(
+                                                                        0,
+                                                                        12,
+                                                                    )}
+                                                                    ...
+                                                                </span>
+                                                                <span className="text-[10px] md:text-xs opacity-70 whitespace-nowrap mt-1 sm:mt-0">
+                                                                    {formatDateToLocaleVI(
+                                                                        rev.createdAt,
+                                                                    )}
+                                                                </span>
+                                                            </button>
+                                                        </li>
+                                                    ),
+                                                )}
                                             </ul>
                                         )}
                                     </div>

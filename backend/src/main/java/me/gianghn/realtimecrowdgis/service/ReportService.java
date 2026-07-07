@@ -129,7 +129,7 @@ public class ReportService {
         // Filter offensive words
         if (!contentFilterService.isValidContent(request.description())) {
             Set<String> offensiveWords = contentFilterService.findOffensiveWords(request.description());
-            throw new IllegalArgumentException("Incident description contains offensive content: " + offensiveWords);
+            throw new OffensiveWordsException("Incident description contains offensive content: " + offensiveWords);
         }
 
         IncidentReport incidentReport = reportMapper.toIncidentReport(request);
