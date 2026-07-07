@@ -17,7 +17,7 @@ export const incidentLayerLayout = {
     "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.08, 15, 0.12],
     "icon-anchor": "center",
     "icon-allow-overlap": true,
-    "text-field": ["to-string", ["coalesce", ["get", "category"], ""]],
+    "text-field": ["to-string", ["coalesce", ["get", "name"], ""]],
     "text-font": ["Noto Sans Regular"],
     "text-size": ["interpolate", ["linear"], ["zoom"], 12, 10, 16, 14],
     "text-anchor": "top",

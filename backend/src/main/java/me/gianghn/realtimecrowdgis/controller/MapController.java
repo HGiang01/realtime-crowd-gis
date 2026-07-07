@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -70,16 +70,19 @@ public class MapController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/locations/{id}/revisions")
-    public ResponseEntity<ApiResponse<Set<MapDTO.GetLocationResponse>>> getLocationRevisions(@PathVariable("id") UUID id) {
+    public ResponseEntity<ApiResponse<Set<MapDTO.GetLocationResponse>>> getLocationRevisions(
+            @PathVariable("id") UUID id
+    ) {
         Set<MapDTO.GetLocationResponse> revisions = mapService.getLocationRevisionsById(id);
         return ResponseEntity.ok(ApiResponse.success("Get location revisions detail successfully", revisions));
     }
 
     @GetMapping("/locations/search")
-    public ResponseEntity<ApiResponse<List<MapDTO.SearchLocationResponse>>> searchLocationsWithoutPagination(
-            @RequestParam(value = "keyword", required = false) String keyword
+    public ResponseEntity<ApiResponse<?>> searchLocationsWithoutPagination(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "depth", required = false) Integer depth
     ) {
-        List<MapDTO.SearchLocationResponse> searchResults = mapService.searchLocations(keyword);
+        Object searchResults = mapService.searchLocations(keyword, Optional.ofNullable(depth));
         return ResponseEntity.ok(ApiResponse.success("Search locations successfully", searchResults));
     }
 }

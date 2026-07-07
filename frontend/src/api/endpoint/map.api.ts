@@ -11,10 +11,12 @@ export const mapApi = {
 
     searchLocation: (
         keyword: string,
+        depth?: number,
     ): Promise<AxiosResponse<ApiResponse<Report.SearchLocation[]>>> => {
         return axiosClient.get(`/map/locations/search`, {
             params: {
                 keyword,
+                depth,
             },
         });
     },

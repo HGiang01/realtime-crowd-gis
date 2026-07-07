@@ -3,7 +3,10 @@ package me.gianghn.realtimecrowdgis.service;
 import lombok.RequiredArgsConstructor;
 import me.gianghn.realtimecrowdgis.client.MartinClient;
 import me.gianghn.realtimecrowdgis.config.RedisConfig;
-import me.gianghn.realtimecrowdgis.dto.MapDTO;
+import me.gianghn.realtimecrowdgis.dto.MapDTO.GetLocationResponse;
+import me.gianghn.realtimecrowdgis.dto.MapDTO.LocationHistoricalMatchProjection;
+import me.gianghn.realtimecrowdgis.dto.MapDTO.SearchLocationResponse;
+import me.gianghn.realtimecrowdgis.dto.MapDTO.SearchLocationWithHistoryResponse;
 import me.gianghn.realtimecrowdgis.entity.Location;
 import me.gianghn.realtimecrowdgis.entity.LocationRevision;
 import me.gianghn.realtimecrowdgis.exception.specify.LocationNotFound;
@@ -13,9 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -82,13 +83,13 @@ public class MapService {
         return null;
     }
 
-    public MapDTO.GetLocationResponse getLocationById(UUID id) {
+    public GetLocationResponse getLocationById(UUID id) {
         Location location = locationRepository.findById(id)
                                               .orElseThrow(() -> new LocationNotFound("Location not found"));
         return mapMapper.toGetLocationResponse(location.getCurrentRevision());
     }
 
-    public Set<MapDTO.GetLocationResponse> getLocationRevisionsById(UUID id) {
+    public Set<GetLocationResponse> getLocationRevisionsById(UUID id) {
         Location location = locationRepository.findById(id)
                                               .orElseThrow(() -> new LocationNotFound("Location not found"));
         return location.getLocationRevisions()
@@ -97,12 +98,67 @@ public class MapService {
                        .collect(Collectors.toSet());
     }
 
-    public List<MapDTO.SearchLocationResponse> searchLocations(String keyword) {
-        if (keyword.isBlank()) {
+    public Object searchLocations(String keyword, Optional<Integer> depth) {
+        if (keyword == null || keyword.isBlank()) {
             return null;
         }
 
-        List<LocationRevision> locations = locationRevisionService.findTop10ByNameAndAddress(keyword);
-        return locations.stream().map(mapMapper::toSearchLocationResponse).toList();
+        if (depth.isPresent()) {
+            return searchHistorical(keyword, depth.get());
+        } else {
+            return searchCurrent(keyword);
+        }
+    }
+
+    private List<SearchLocationResponse> searchCurrent(String keyword) {
+        List<LocationRevision> locations =
+                locationRevisionService.findTop10ByNameAndAddress(keyword);
+
+        return locations.stream()
+                        .map(mapMapper::toSearchLocationResponse)
+                        .toList();
+    }
+
+    private List<SearchLocationWithHistoryResponse> searchHistorical(String keyword, int depth) {
+        List<LocationHistoricalMatchProjection> revisions = locationRevisionService.findTop10HistoricalByNameAndAddress(
+                keyword,
+                depth + 1
+        );
+
+        Map<UUID, List<LocationHistoricalMatchProjection>> locations = revisions.stream()
+                                                                                .collect(Collectors.groupingBy(
+                                                                                        LocationHistoricalMatchProjection::getLocationId,
+                                                                                        LinkedHashMap::new,
+                                                                                        Collectors.toList()
+                                                                                ));
+
+        return locations.entrySet().stream()
+                        .map(entry -> buildSearchHistoricalLocationResponse(entry.getKey(), entry.getValue()))
+                        .toList();
+    }
+
+    private SearchLocationWithHistoryResponse buildSearchHistoricalLocationResponse(
+            UUID locationId,
+            List<LocationHistoricalMatchProjection> revisions
+    ) {
+        LocationHistoricalMatchProjection current = revisions.stream()
+                                                             .filter(r -> r.getRn() == 1)
+                                                             .findFirst()
+                                                             .orElse(revisions.getFirst());
+
+        List<LocationHistoricalMatchProjection> historicalRows = revisions.stream()
+                                                                          .filter(r -> r.getRn() > 1 && Boolean.TRUE.equals(
+                                                                                  r.getIsMatch()))
+                                                                          .toList();
+
+        List<SearchLocationWithHistoryResponse.HistoricalMatch> historicalMatches =
+                mapMapper.toHistoricalMatchInfoList(historicalRows);
+
+        return new SearchLocationWithHistoryResponse(
+                locationId,
+                current.getName(),
+                current.getFormattedAddress(),
+                historicalMatches
+        );
     }
 }

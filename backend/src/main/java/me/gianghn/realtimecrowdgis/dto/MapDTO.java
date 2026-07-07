@@ -27,4 +27,29 @@ public interface MapDTO {
             String formattedAddress
     ) {
     }
+
+    record SearchLocationWithHistoryResponse(
+            UUID locationId,
+            String name,
+            String formattedAddress,
+            List<HistoricalMatch> historicalMatches
+    ) {
+        public record HistoricalMatch(
+                String name,
+                String formattedAddress
+        ) {
+        }
+    }
+
+    public interface LocationHistoricalMatchProjection {
+        UUID getLocationId();
+
+        String getName();
+
+        String getFormattedAddress();
+
+        Integer getRn();
+
+        Boolean getIsMatch();
+    }
 }
