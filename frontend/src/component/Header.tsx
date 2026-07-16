@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
     AlertTriangle,
+    LifeBuoy,
     ClipboardClock,
     ClipboardList,
     LogIn,
@@ -12,6 +13,8 @@ import {
     MapPin,
     Loader2,
     MoveLeft,
+    Inbox,
+    Headset,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { mapApi } from "@/api";
@@ -322,6 +325,36 @@ export default function Header({ onSearchSelect }: HeaderProps) {
 
                 {/* User Actions Menu */}
                 <div className="ml-auto flex shrink-0 items-center gap-0 sm:gap-1">
+                    <div className="dropdown dropdown-end">
+                        <div
+                            tabIndex={0}
+                            role="button"
+                            className="btn btn-ghost px-2 sm:px-3"
+                        >
+                            <LifeBuoy size={20} />
+                            <span className="hidden md:block text-[14px]">
+                                Support
+                            </span>
+                        </div>
+                        <ul
+                            tabIndex={-1}
+                            className="dropdown-content menu bg-base-100 rounded-box z-1 w-36 p-2 shadow-sm border border-wg-outline-variant/70 mt-2"
+                        >
+                            <li>
+                                <Link to="/contact">
+                                    <Headset size={18} />
+                                    <span>Contact</span>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/feedback">
+                                    <Inbox size={18} />
+                                    <span>Feedback</span>
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
                     {isAuthenticated && role === "admin" && (
                         <div className="dropdown dropdown-end">
                             <div

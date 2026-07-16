@@ -10,3 +10,4 @@ export type {
 } from "./user.ts";
 export type { ApiResponse } from "./apiResponse";
 export type * as Report from "./report";
+export type * as Feedback from "./feedback";

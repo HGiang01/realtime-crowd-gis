@@ -32,8 +32,9 @@ public class UserService {
         return userRepository.existsUserByEmail(email);
     }
 
-    public Optional<User> findById(UUID userId) {
-        return userRepository.findById(userId);
+    public User findById(UUID userId) {
+        return userRepository.findById(userId)
+                             .orElseThrow(() -> new UserNotFoundException("User not found with user ID: " + userId));
     }
 
     public Optional<User> findByUsername(String username) {
@@ -113,7 +114,8 @@ public class UserService {
                                   .orElseThrow(() -> new UserNotFoundException("User not found with user id: " + userId + " to delete"));
 
         if (user.getRole() == User.UserRole.admin) {
-            throw new PermissionDeniedException("Insufficient permissions to change the status of an administrator account.");
+            throw new PermissionDeniedException(
+                    "Insufficient permissions to change the status of an administrator account.");
         }
 
         if (request.status() != User.UserStatus.active) {

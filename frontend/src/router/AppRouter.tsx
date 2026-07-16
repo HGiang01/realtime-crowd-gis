@@ -9,14 +9,19 @@ import {
     ResetPasswordPage,
     VerifyEmailPage,
 } from "@/feature/auth";
-import { UpdatePasswordPage, UpdateProfilePage, UserPage, } from "@/feature/user";
+import {
+    UpdatePasswordPage,
+    UpdateProfilePage,
+    UserPage,
+} from "@/feature/user";
 import { HomePage, IntroductionPage, NotFoundPage } from "@/page";
 import * as reportPages from "@/feature/report";
 import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
+import { ContactPage, FeedbackPage } from "@/feature/support";
 
 export default function AppRouter() {
-    const {getMe, isAuthenticated, user} = useAuthStore();
+    const { getMe, isAuthenticated, user } = useAuthStore();
     const hasAccessToken = !!sessionStorage.getItem("access_token");
 
     useEffect(() => {
@@ -54,19 +59,8 @@ export default function AppRouter() {
                     path={"/auth/reset-password"}
                     element={<ResetPasswordPage />}
                 />
+                <Route path={"/contact"} element={<ContactPage />} />
                 <Route path="/home" element={<HomePage />} />
-
-                <Route element={<ProtectedRoute />}>
-                    <Route path={"/user"} element={<UserPage />} />
-                    <Route
-                        path={"/user/edit"}
-                        element={<UpdateProfilePage />}
-                    />
-                    <Route
-                        path={"/user/password"}
-                        element={<UpdatePasswordPage />}
-                    />
-                </Route>
 
                 {/*User routes*/}
                 <Route element={<ProtectedRoute requiredRole="user" />}>
@@ -84,7 +78,7 @@ export default function AppRouter() {
                         path={"/location-reports/create/:id"}
                         element={<reportPages.UserLocationCreatePage />}
                     />
-                    
+
                     <Route
                         path={"/location-reports/:id"}
                         element={<reportPages.UserLocationDetailPage />}
@@ -136,6 +130,19 @@ export default function AppRouter() {
                     <Route
                         path={"/admin/incident-reports/pending"}
                         element={<reportPages.AdminIncidentPendingPage />}
+                    />
+                </Route>
+
+                <Route element={<ProtectedRoute />}>
+                    <Route path="/feedback" element={<FeedbackPage />} />
+                    <Route path={"/user"} element={<UserPage />} />
+                    <Route
+                        path={"/user/edit"}
+                        element={<UpdateProfilePage />}
+                    />
+                    <Route
+                        path={"/user/password"}
+                        element={<UpdatePasswordPage />}
                     />
                 </Route>
 

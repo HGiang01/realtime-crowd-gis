@@ -131,8 +131,7 @@ public class AuthService {
         RefreshToken validRefreshToken = tokenService.verifyRefreshToken(refreshTokenStr);
         UUID userId = validRefreshToken.getUser().getId();
 
-        User user = userService.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with user ID: " + userId));
+        User user = userService.findById(userId);
 
         if (user.getStatus() != User.UserStatus.active) {
             tokenService.revokeRefreshTokensByUserId(userId);
