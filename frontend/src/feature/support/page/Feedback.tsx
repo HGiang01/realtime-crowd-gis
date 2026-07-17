@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { feedbackApi } from "@/api";
 import {
     MapPinned,
@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 
 export default function Feedback() {
+    const navigate = useNavigate();
     const [description, setDescription] = useState("");
     const [satisfactionRating, setSatisfactionRating] = useState<
         "dissatisfied" | "acceptable" | "satisfied"
@@ -35,6 +36,7 @@ export default function Feedback() {
             setIsLoading(false);
             setDescription("");
             setSatisfactionRating("satisfied");
+            navigate("/home");
         } catch (error) {
             setIsLoading(false);
             setSubmitRatingError(
