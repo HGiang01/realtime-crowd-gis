@@ -6,18 +6,18 @@ export const MAP_BOUNDS: [number, number, number, number] = [
 ];
 
 export const ICONS_TO_LOAD = [
-    { name: "education", url: "/icons/education.png" },
-    { name: "government", url: "/icons/government.png" },
-    { name: "landmark", url: "/icons/landmark.png" },
-    { name: "market", url: "/icons/market.png" },
-    { name: "medical", url: "/icons/medical.png" },
-    { name: "museum", url: "/icons/museum.png" },
-    { name: "other", url: "/icons/other.png" },
-    { name: "park", url: "/icons/park.png" },
-    { name: "police", url: "/icons/police.png" },
-    { name: "religion", url: "/icons/religion.png" },
-    { name: "restroom", url: "/icons/restroom.png" },
-    { name: "tourism", url: "/icons/tourism.png" },
+    { name: "poi-education", url: "/icons/poi-education.png" },
+    { name: "poi-government", url: "/icons/poi-government.png" },
+    { name: "poi-landmark", url: "/icons/poi-landmark.png" },
+    { name: "poi-market", url: "/icons/poi-market.png" },
+    { name: "poi-medical", url: "/icons/poi-medical.png" },
+    { name: "poi-museum", url: "/icons/poi-museum.png" },
+    { name: "poi-other", url: "/icons/poi-other.png" },
+    { name: "poi-park", url: "/icons/poi-park.png" },
+    { name: "poi-police", url: "/icons/poi-police.png" },
+    { name: "poi-religion", url: "/icons/poi-religion.png" },
+    { name: "poi-restroom", url: "/icons/poi-restroom.png" },
+    { name: "poi-tourism", url: "/icons/poi-tourism.png" },
 ];
 
 export const OFFICIAL_PROTOMAPS_STYLE: maplibregl.StyleSpecification = {
