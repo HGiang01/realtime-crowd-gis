@@ -2,61 +2,64 @@
 
 /*
  * ==========================================================================
- * DESIGN SYSTEM: WEBGIS THỦ ĐỨC ("The Cartographic Lens")
+ * DESIGN SYSTEM: WEBGIS THU DUC ("The Cartographic Lens")
  * Tailwind v4 Direct Configuration
  * Add prefix "wg-" to avoid conflicts with Daily UI
  * ==========================================================================
  */
 
 @theme {
-    /* --- 1. Primary Colors (Màu chủ đạo - Xanh Dương) --- */
+    /* --- 1. Primary Colors (Blue) --- */
     --color-wg-primary: #005bbf;
     --color-on-wg-primary: #ffffff;
 
-    --color-wg-primary-container: #1a73e8; /* Bản nhạt hơn để làm nền nút to */
+    --color-wg-primary-container: #1a73e8; /* Lighter variant for large button backgrounds */
     --color-on-wg-primary-container: #ffffff;
 
-    /* Nhóm màu đảo ngược (Nền siêu nhạt + Icon đậm) - Đã đổi tên đồng bộ */
-    --color-wg-primary-soft: #d8e2ff; /* Nền xanh lơ siêu nhạt */
-    --color-on-wg-primary-soft: #004493; /* Icon/Chữ màu xanh dương đậm */
-    /* --- 2. Secondary Colors (Màu phụ trợ - Xanh Lam Xám) --- */
+    /* Soft variants (Light background + Dark icon/text) */
+    --color-wg-primary-soft: #d8e2ff; /* Soft blue background */
+    --color-on-wg-primary-soft: #004493; /* Dark blue icon/text */
+    
+    /* --- 2. Secondary Colors (Blue Gray) --- */
     --color-wg-secondary: #475e8c;
     --color-on-wg-secondary: #ffffff;
     --color-wg-secondary-container: #b2c9fe;
     --color-on-wg-secondary-container: #3d5481;
 
-    /* --- 3. Tertiary Colors (Điểm nhấn - Cam Đất - Rất ít dùng) --- */
+    /* --- 3. Tertiary Colors (Accent - Terracotta - Sparse usage) --- */
     --color-wg-tertiary: #9e4300;
     --color-on-wg-tertiary: #ffffff;
 
-    /* --- 4. Background & Surface (Màu nền & Phân lớp không gian) --- */
-    --color-wg-background: #f8f9fa; /* Nền toàn trang */
+    /* --- 4. Background & Surface (Spatial layering) --- */
+    --color-wg-background: #f8f9fa; /* Global background */
     --color-on-wg-background: #191c1d;
 
-    --color-wg-surface: #f8f9fa; /* Nền cơ bản */
-    --color-wg-surface-container-lowest: #ffffff; /* Trắng tinh cho Card, Form */
-    --color-wg-surface-container: #edeeef; /* Xám nhạt cho Sidebar, Header */
-    --color-on-wg-surface: #191c1d; /* Màu chữ chuẩn */
-    --color-on-wg-surface-variant: #414754; /* Màu chữ xám mờ cho ghi chú */
-    /* --- 5. Outlines (Đường viền) --- */
-    --color-wg-outline: #727785; /* Viền Input đậm */
-    --color-wg-outline-variant: #c1c6d6; /* Viền Card, vạch kẻ nhạt */
-    /* --- 6. Semantic & Status Colors (Thông báo trạng thái) --- */
+    --color-wg-surface: #f8f9fa; /* Base surface */
+    --color-wg-surface-container-lowest: #ffffff; /* Pure white for cards/forms */
+    --color-wg-surface-container: #edeeef; /* Light gray for sidebars/headers */
+    --color-on-wg-surface: #191c1d; /* Standard text color */
+    --color-on-wg-surface-variant: #414754; /* Muted gray for notes/captions */
+    
+    /* --- 5. Outlines --- */
+    --color-wg-outline: #727785; /* Dark input border */
+    --color-wg-outline-variant: #c1c6d6; /* Light border for cards/dividers */
+    
+    /* --- 6. Semantic & Status Colors --- */
     --color-wg-error: #ea4335;
     --color-on-wg-error: #ffffff;
     --color-wg-warning: #fbbc04;
     --color-wg-success: #34a853;
 
-    /* --- 7. Box Shadows (Hiệu ứng chiều sâu) --- */
+    /* --- 7. Box Shadows (Depth effects) --- */
     --shadow-wg-ambient: 0 12px 40px rgba(0, 91, 191, 0.06);
 
-    /* --- 8. Border Radius (Độ bo góc) --- */
+    /* --- 8. Border Radius --- */
     --radius: 0.25rem;
     --radius-lg: 0.5rem;
     --radius-xl: 0.75rem;
     --radius-full: 9999px;
 
-    /* --- 9. Typography (Font chữ - Giữ nguyên) --- */
+    /* --- 9. Typography (Kept as default) --- */
     --font-display: "Be Vietnam Pro", sans-serif;
     --font-headline: "Be Vietnam Pro", sans-serif;
     --font-body: "Be Vietnam Pro", sans-serif;
@@ -64,8 +67,12 @@
     --font-mono: "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
 }
 
-/* 
- * ==========================================================================
+/* Custom close button for map popups */
+.maplibregl-popup-close-button {
+    @apply px-2 text-on-wg-surface bg-transparent rounded-full p-1 opacity-70 hover:opacity-100 transition-opacity;
+}
+
+/* * ==========================================================================
  * GLOBAL STYLES (Base setup & overrides)
  * ==========================================================================
  */
@@ -102,4 +109,56 @@
     .material-symbols-outlined.fill {
         font-variation-settings: "FILL" 1;
     }
+}
+
+@layer components {
+    /* Custom button styles */
+    .btn-primary-solid {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-wg-primary text-on-wg-primary hover:bg-wg-primary-container;
+    }
+
+    .btn-primary-outline {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-wg-primary bg-transparent text-wg-primary hover:bg-wg-primary/10;
+    }
+
+    .btn-neutral-solid {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-wg-surface-container text-on-wg-surface hover:bg-wg-outline-variant hover:text-black;
+    }
+
+    .btn-neutral-outline {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-wg-outline bg-transparent text-on-wg-surface hover:bg-wg-surface-container;
+    }
+
+    .btn-success-solid {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-wg-success text-white hover:bg-wg-success/80;
+    }
+
+    .btn-success-outline {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-wg-success bg-transparent text-wg-success hover:bg-wg-success/10;
+    }
+
+    .btn-warning-solid {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-orange-400 text-white hover:bg-orange-500;
+    }
+
+    .btn-warning-outline {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-orange-400 bg-transparent text-orange-400 hover:bg-orange-400/10;
+    }
+
+    .btn-error-solid {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-transparent bg-wg-error text-on-wg-error hover:bg-wg-error/80;
+    }
+
+    .btn-error-outline {
+        @apply px-4 py-2 inline-flex items-center justify-center gap-2 rounded-lg border border-wg-error bg-transparent text-wg-error hover:bg-wg-error/10;
+    }
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none !important;
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
 }

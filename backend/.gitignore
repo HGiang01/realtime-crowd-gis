@@ -1,8 +1,10 @@
+**/application*.yaml
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+/src/main/resources/gcp-service-account.json
 
 ### STS ###
 .apt_generated
